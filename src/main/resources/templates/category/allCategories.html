@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <title>All Categories</title>
+</head>
+
+<body>
+    <table class = "table table-bordered table-striped">
+        <thead align="center" bgcolor="#00FA9A">
+            <tr>
+                <th>Category</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="category : ${categories}">
+                <td align="center">
+                    <a th:href="@{category/{name}(name=${category.getName()})}" th:text="${category.getName()}">cat </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p align="center"><button onclick="window.location.href='/'">Back to main menu</button></p>
+</body>
+</html>
