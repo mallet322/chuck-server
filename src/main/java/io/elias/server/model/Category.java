@@ -1,7 +1,6 @@
 package io.elias.server.model;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,38 +15,34 @@ import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 @Builder
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "category")
+@Table(name = "categories")
 public class Category extends AbstractAuditableEntity implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
+    private Long id;
 
-    @Column(name = "name")
     private String name;
 
-    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category", orphanRemoval = true)
-    List<Joke> jokes = new ArrayList<>();
+    private List<Joke> jokes = new ArrayList<>();
 
-    public Category setJokes(List<Joke> jokes) {
-        this.jokes.clear();
-        jokes.forEach(joke -> joke.setCategory(this));
-        this.jokes.addAll(jokes);
-        return this;
+    public void addJoke(Joke joke) {
+        this.jokes.add(joke);
+        joke.setCategory(this);
     }
 
 }

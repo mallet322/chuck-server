@@ -1,40 +1,19 @@
 package io.elias.server.mapper;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
-import io.elias.server.dto.CategoryDTO;
+import io.elias.server.config.SpringMapperConfig;
+import io.elias.server.dto.CategoryDto;
 import io.elias.server.model.Category;
 
-@Component
-@RequiredArgsConstructor
-public class CategoryMapper {
+@Mapper(config = SpringMapperConfig.class)
+public interface CategoryMapper {
 
-    private final JokeMapper jokeMapper;
+   @Mapping(source = "request.name", target = "name")
+   Category map(CategoryDto request);
 
-    public CategoryDTO toDto(Category category) {
-        return CategoryDTO.builder()
-                          .name(category.getName())
-                          .jokes(category.getJokes()
-                                         .stream()
-                                         .map(joke -> jokeMapper.toDto(joke))
-                                         .collect(Collectors.toList()))
-                          .build();
-    }
-
-    public List<CategoryDTO> toDto(List<Category> categories) {
-        return categories.stream()
-                         .map(category -> CategoryDTO.builder()
-                                                     .name(category.getName())
-                                                     .jokes(category.getJokes()
-                                                                    .stream()
-                                                                    .map((joke -> jokeMapper.toDto(joke)))
-                                                                    .collect(Collectors.toList()))
-                                                     .build())
-                         .collect(Collectors.toList());
-    }
+   @Mapping(source = "entity.name", target = "name")
+   CategoryDto map(Category entity);
 
 }

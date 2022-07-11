@@ -11,6 +11,6 @@ public interface JokeRepository extends JpaRepository<Joke, UUID> {
 
     Joke findJokeByValue(String name);
 
-    List<Joke> findJokesByCategory_Name(String name);
+    List<Joke> findJokesByCategoryName(String name);
 
 }

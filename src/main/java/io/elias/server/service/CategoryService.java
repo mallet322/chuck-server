@@ -2,16 +2,16 @@ package io.elias.server.service;
 
 import java.util.List;
 
-import io.elias.server.model.Category;
+import org.springframework.http.ResponseEntity;
+
+import io.elias.server.dto.CategoryDto;
 
 public interface CategoryService {
 
-    Category getCategoryByName(String name);
+    ResponseEntity<CategoryDto> getCategoryByName(String name);
 
-    List<Category> findAll();
+    ResponseEntity<List<CategoryDto>> getAllCategories();
 
-    Category createCategory(Category category);
-
-    void createAllCategory();
+    ResponseEntity<Void> createCategories(boolean flag, CategoryDto categoryRequest);
 
 }

@@ -1,13 +1,13 @@
 package io.elias.server.repository;
 
-import java.util.UUID;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import io.elias.server.model.Category;
 
-public interface CategoryRepository extends JpaRepository<Category, UUID> {
+public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-    Category findCategoryByName(String name);
+    Optional<Category> findCategoryByName(String name);
 
 }

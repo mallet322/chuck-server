@@ -7,11 +7,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import io.elias.server.client.JokeClient;
 import io.elias.server.model.Joke;
 import io.elias.server.repository.CategoryRepository;
 import io.elias.server.repository.JokeRepository;
 import io.elias.server.service.JokeService;
-import io.elias.server.service.RequestHelper;
 
 @Service
 @RequiredArgsConstructor
@@ -22,16 +22,16 @@ public class JokeServiceImpl implements JokeService {
 
     private final CategoryRepository categoryRepository;
 
-    private final RequestHelper helper;
+    private final JokeClient jokeClient;
 
     @Override
     public Joke getJokeByCategoryFromChuckAPI(String name) {
         var category = categoryRepository.findCategoryByName(name);
-        String value = helper.getJokeByCategoryFromREST(category.getName());
+        String value = jokeClient.getRandomJokeByCategory(category.get().getName());
 
         var joke = Joke.builder()
                        .value(value)
-                       .category(category)
+                       .category(category.get())
                        .build();
 
         var existingJoke = jokeRepository.findJokeByValue(joke.getValue());
@@ -51,7 +51,7 @@ public class JokeServiceImpl implements JokeService {
     @Override
     public Joke getRandomJokeFromChuckAPI() {
         return Joke.builder()
-                   .value(helper.getRandomJoke())
+                   .value(jokeClient.getRandomJoke())
                    .build();
     }
 
@@ -73,7 +73,7 @@ public class JokeServiceImpl implements JokeService {
 
     @Override
     public List<Joke> getJokesByCategory(String name) {
-        return jokeRepository.findJokesByCategory_Name(name);
+        return jokeRepository.findJokesByCategoryName(name);
     }
 
 }
