@@ -1,21 +1,13 @@
 package io.elias.server.service;
 
-import java.util.List;
+import org.springframework.http.ResponseEntity;
 
-import io.elias.server.model.Joke;
+import io.elias.server.dto.JokeDto;
 
 public interface JokeService {
 
-    Joke getJokeByCategoryFromChuckAPI(String name);
+    ResponseEntity<Void> createJoke(boolean flag, String category, JokeDto jokeDto);
 
-    Joke getRandomJokeFromChuckAPI();
-
-    void createJoke(Joke joke);
-
-    List<Joke> getAllJokes();
-
-    Joke getRandomJoke();
-
-    List<Joke> getJokesByCategory(String name);
+    ResponseEntity<JokeDto> getRandomJoke();
 
 }

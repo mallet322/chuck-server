@@ -1,17 +1,23 @@
 package io.elias.server.service.impl;
 
-import java.util.List;
-import java.util.Random;
-
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.elias.server.client.JokeClient;
+import io.elias.server.dto.JokeDto;
+import io.elias.server.exception.BusinessException;
+import io.elias.server.exception.ErrorType;
+import io.elias.server.mapper.JokeMapper;
 import io.elias.server.model.Joke;
 import io.elias.server.repository.CategoryRepository;
 import io.elias.server.repository.JokeRepository;
 import io.elias.server.service.JokeService;
+import io.elias.server.service.MessageSourceHelper;
 
 @Service
 @RequiredArgsConstructor
@@ -22,58 +28,43 @@ public class JokeServiceImpl implements JokeService {
 
     private final CategoryRepository categoryRepository;
 
+    private final JokeMapper jokeMapper;
+
     private final JokeClient jokeClient;
 
+    private final MessageSourceHelper messageSourceHelper;
+
     @Override
-    public Joke getJokeByCategoryFromChuckAPI(String name) {
-        var category = categoryRepository.findCategoryByName(name);
-        String value = jokeClient.getRandomJokeByCategory(category.get().getName());
-
-        var joke = Joke.builder()
-                       .value(value)
-                       .category(category.get())
-                       .build();
-
-        var existingJoke = jokeRepository.findJokeByValue(joke.getValue());
-
-        if (existingJoke != null) {
-            log.info("This joke is already in the database");
-            if (existingJoke.getValue().isEmpty()) {
-                log.info("This joke with an empty value");
-            }
+    @Transactional
+    public ResponseEntity<Void> createJoke(boolean flag, String category, JokeDto jokeDto) {
+        if (flag) {
+            getAndSaveJoke(category);
         } else {
-            jokeRepository.save(joke);
+            jokeRepository.save(jokeMapper.map(jokeDto));
         }
-
-        return joke;
+        return ResponseEntity.ok().build();
     }
 
     @Override
-    public Joke getRandomJokeFromChuckAPI() {
-        return Joke.builder()
-                   .value(jokeClient.getRandomJoke())
-                   .build();
+    public ResponseEntity<JokeDto> getRandomJoke() {
+        return ResponseEntity.ok(jokeMapper.map(jokeRepository.findRandomJoke()));
     }
 
-    @Override
-    public void createJoke(Joke joke) {
+    private void getAndSaveJoke(String categoryName) {
+        var category =
+                categoryRepository.findCategoryByName(categoryName)
+                 .orElseThrow(() -> {
+                    var errorType = ErrorType.CATEGORY_NOT_FOUND_BY_NAME;
+                    var msg = messageSourceHelper.getMessage(errorType, categoryName);
+                    log.warn(msg);
+                    throw new BusinessException(errorType, msg);
+                 });
+        var joke =
+                Joke.builder()
+                    .value(jokeClient.getRandomJokeByCategory(category.getName()))
+                    .category(category)
+                    .build();
         jokeRepository.save(joke);
-    }
-
-    @Override
-    public List<Joke> getAllJokes() {
-        return jokeRepository.findAll();
-    }
-
-    @Override
-    public Joke getRandomJoke() {
-        var jokes = jokeRepository.findAll();
-        return jokes.get(new Random().nextInt(jokes.size()));
-    }
-
-    @Override
-    public List<Joke> getJokesByCategory(String name) {
-        return jokeRepository.findJokesByCategoryName(name);
     }
 
 }

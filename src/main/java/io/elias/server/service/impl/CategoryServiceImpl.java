@@ -4,17 +4,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.elias.server.client.JokeClient;
 import io.elias.server.dto.CategoryDto;
+import io.elias.server.exception.BusinessException;
+import io.elias.server.exception.ErrorType;
 import io.elias.server.mapper.CategoryMapper;
 import io.elias.server.model.Category;
 import io.elias.server.repository.CategoryRepository;
 import io.elias.server.service.CategoryService;
+import io.elias.server.service.MessageSourceHelper;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
@@ -25,20 +30,30 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryMapper categoryMapper;
 
+    private final MessageSourceHelper messageSourceHelper;
+
     @Override
+    @Transactional
     public ResponseEntity<CategoryDto> getCategoryByName(String name) {
         return ResponseEntity.ok(
                 categoryRepository.findCategoryByName(name)
                                   .map(categoryMapper::map)
-                                  .orElse(null)
+                                  .orElseThrow(() -> {
+                                      var errorType = ErrorType.CATEGORY_NOT_FOUND_BY_NAME;
+                                      var msg = messageSourceHelper.getMessage(errorType, name);
+                                      log.warn(msg);
+                                      throw new BusinessException(errorType, msg);
+                                  })
         );
     }
 
     @Override
+    @Transactional
     public ResponseEntity<List<CategoryDto>> getAllCategories() {
         return ResponseEntity.ok(
                 categoryRepository.findAll()
-                                  .stream().map(categoryMapper::map)
+                                  .stream()
+                                  .map(categoryMapper::map)
                                   .collect(Collectors.toList())
         );
     }

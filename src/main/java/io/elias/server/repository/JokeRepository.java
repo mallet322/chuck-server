@@ -1,16 +1,17 @@
 package io.elias.server.repository;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import io.elias.server.model.Joke;
 
-public interface JokeRepository extends JpaRepository<Joke, UUID> {
+public interface JokeRepository extends JpaRepository<Joke, UUID>, QuerydslPredicateExecutor<Joke> {
 
-    Joke findJokeByValue(String name);
-
-    List<Joke> findJokesByCategoryName(String name);
+    @Query(nativeQuery = true,
+           value = "select j.* from jokes j order by random() limit 1")
+    Joke findRandomJoke();
 
 }

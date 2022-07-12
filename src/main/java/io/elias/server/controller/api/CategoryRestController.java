@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.elias.server.dto.CategoryDto;
 import io.elias.server.service.CategoryService;
+import io.elias.server.util.ApiPathConstants;
 
 @RestController
-@RequestMapping("/categories")
+@RequestMapping(ApiPathConstants.API_V_1 + ApiPathConstants.CATEGORIES)
 @RequiredArgsConstructor
 public class CategoryRestController {
 
@@ -34,7 +35,7 @@ public class CategoryRestController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(@RequestParam(value = "manual") boolean flag,
+    public ResponseEntity<Void> create(@RequestParam(value = "auto") boolean flag,
                                        @RequestBody(required = false) CategoryDto request) {
         return categoryService.createCategories(flag, request);
     }
