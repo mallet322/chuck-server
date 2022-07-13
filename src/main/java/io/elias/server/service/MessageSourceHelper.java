@@ -45,7 +45,6 @@ public class MessageSourceHelper {
         return messageSource.getMessage(
                 errorType.name().toLowerCase(),
                 placeholders,
-                errorType.getMessage(),
                 locale
         );
     }

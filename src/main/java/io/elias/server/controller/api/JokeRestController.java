@@ -3,6 +3,7 @@ package io.elias.server.controller.api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,9 +21,19 @@ public class JokeRestController {
 
     private final JokeService jokeService;
 
+    @GetMapping(ApiPathConstants.BY_ID)
+    public ResponseEntity<JokeDto> getJokeById(@PathVariable("id") Long id) {
+        return jokeService.getJokeById(id);
+    }
+
     @GetMapping(ApiPathConstants.RANDOM)
-    public ResponseEntity<JokeDto> getRandomeJoke() {
+    public ResponseEntity<JokeDto> getRandomJoke() {
         return jokeService.getRandomJoke();
+    }
+
+    @GetMapping(ApiPathConstants.RANDOM + ApiPathConstants.BY_CATEGORY_NAME)
+    public ResponseEntity<JokeDto> getRandomJokeByCategory(@PathVariable("categoryName") String categoryName) {
+        return jokeService.getRandomJokeByCategory(categoryName);
     }
 
     @PostMapping

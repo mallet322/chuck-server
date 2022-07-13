@@ -3,3 +3,5 @@ spring:
     url: jdbc:postgresql://localhost:5433/chuck
     username: postgres
     password: pass
+  messages:
+    basename: i18n/messages

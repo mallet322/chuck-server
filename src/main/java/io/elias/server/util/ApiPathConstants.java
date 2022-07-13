@@ -14,6 +14,10 @@ public class ApiPathConstants {
 
     public static final String JOKES = "/jokes";
 
+    public static final String BY_ID = "/{id}";
+
+    public static final String BY_CATEGORY_NAME = "/{categoryName}";
+
     public static final String RANDOM = "/random";
 
 }
