@@ -2,9 +2,6 @@ package io.elias.server.util;
 
 import lombok.experimental.UtilityClass;
 
-/**
- * Константы.
- */
 @UtilityClass
 public class ApiPathConstants {
 

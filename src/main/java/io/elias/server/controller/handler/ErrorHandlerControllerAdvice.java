@@ -10,17 +10,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import io.elias.server.exception.BusinessException;
 import io.elias.server.exception.ErrorType;
 
-/**
- * Spring AOP Advice обработки ошибок контроллера.
- */
 @Slf4j
 @RequiredArgsConstructor
 @RestControllerAdvice
 public class ErrorHandlerControllerAdvice {
 
-    /**
-     * Обработчик ошибок {@link BusinessException}.
-     */
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorMessage> handleNotFroundException(BusinessException e) {
         var errorType = e.getErrorType();
