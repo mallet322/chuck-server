@@ -1,7 +1,5 @@
 package io.elias.server.dto;
 
-import javax.validation.constraints.NotBlank;
-
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -16,10 +14,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Транспортный объект категории")
-public class CategoryDto {
+public class JokesGeneralStatistic {
 
     @Parameter(description = "Наименование категории")
-    @NotBlank
     private String name;
+
+    @Parameter(description = "Количество шуток в категории")
+    private Long jokesCount;
 
 }

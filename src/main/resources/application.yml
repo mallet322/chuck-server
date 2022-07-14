@@ -5,3 +5,9 @@ spring:
     password: pass
   messages:
     basename: i18n/messages
+springdoc:
+  packages-to-scan: io.elias.server
+  swagger-ui:
+    path: /swagger-ui
+    tagsSorter: alpha
+    doc-expansion: none

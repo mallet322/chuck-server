@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.query.Param;
 
 import io.elias.server.model.Joke;
 
@@ -24,5 +25,12 @@ public interface JokeRepository extends JpaRepository<Joke, UUID>, QuerydslPredi
                    + "order by random() "
                    + "limit 1")
     Joke findRandomJokeByCategoryId(Long categoryId);
+
+    @Query("select count(j) "
+            + "from Category c "
+            + "left join c.jokes j "
+            + "where c.name = :categoryName "
+            + "group by c.id")
+    Long countJokeByCategoryName(@Param("categoryName") String categoryName);
 
 }

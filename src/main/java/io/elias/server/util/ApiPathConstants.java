@@ -20,4 +20,8 @@ public class ApiPathConstants {
 
     public static final String RANDOM = "/random";
 
+    public static final String STATISTICS = "/statistics";
+
+    public static final String QUERY = "/query";
+
 }
