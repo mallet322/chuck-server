@@ -44,9 +44,10 @@ public class JokeRestController {
 
     @Operation(summary = "Получение случайной шутки по наименовании категории")
     @GetMapping(ApiPathConstants.RANDOM + ApiPathConstants.BY_CATEGORY_NAME)
-    public ResponseEntity<JokeDto> getRandomJokeByCategory(@PathVariable("categoryName")
-                                                           @Parameter(description = "Наименование категории")
-                                                                       String categoryName) {
+    public ResponseEntity<JokeDto> getRandomJokeByCategory(
+            @PathVariable("categoryName")
+            @Parameter(description = "Наименование категории")
+            String categoryName) {
         return jokeService.getRandomJokeByCategory(categoryName);
     }
 
@@ -69,7 +70,8 @@ public class JokeRestController {
 
     @Operation(summary = "Получение списка шуток по критерию")
     @GetMapping(ApiPathConstants.QUERY)
-    public ResponseEntity<List<JokeDto>> getJokesByCriteria(@ParameterObject JokeQueryCriteria criteria) {
+    public ResponseEntity<List<JokeDto>> getJokesByCriteria(
+            @ParameterObject JokeQueryCriteria criteria) {
         return jokeService.getRandomJokeByCriteria(criteria);
     }
 

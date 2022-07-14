@@ -30,7 +30,8 @@ public class CategoryRestController {
     @Operation(summary = "Получение категории по наименованию")
     @GetMapping("{categoryName}")
     public ResponseEntity<CategoryDto> getCategoryByName(
-            @Parameter(description = "Наименование категории") @PathVariable("categoryName") String name) {
+            @Parameter(description = "Наименование категории")
+            @PathVariable("categoryName") String name) {
         return categoryService.getCategoryByName(name);
     }
 

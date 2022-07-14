@@ -121,21 +121,30 @@ public class JokeServiceImpl implements JokeService {
         return categoryRepository.findCategoryByName(categoryName)
                                  .orElseThrow(() -> {
                                      var errorType = ErrorType.CATEGORY_NOT_FOUND_BY_NAME;
-                                     var msg = messageSourceHelper.getMessage(errorType, categoryName);
+                                     var msg = messageSourceHelper.getMessage(
+                                             errorType,
+                                             categoryName
+                                     );
                                      log.error(msg);
                                      throw new BusinessException(errorType, msg);
                                  });
     }
 
     private JokesGeneralStatistic getSummaryJokesOnCategories(Category category) {
-        return new JokesGeneralStatistic(category.getName(),
-                                         jokeRepository.countJokeByCategoryName(category.getName()));
+        return new JokesGeneralStatistic(
+                category.getName(),
+                jokeRepository.countJokeByCategoryName(category.getName())
+        );
     }
 
     private BooleanBuilder getBooleanBuilder(JokeQueryCriteria criteria) {
         var booleanBuilder = new BooleanBuilder();
-        commonBooleanBuilder.andMatchStringFilter(booleanBuilder, criteria.getJokeName(), QEntities.JOKE.value);
-        commonBooleanBuilder.andMatchStringFilter(booleanBuilder, criteria.getCategoryName(), QEntities.CATEGORY.name);
+        commonBooleanBuilder.andMatchStringFilter(booleanBuilder,
+                                                  criteria.getJokeName(),
+                                                  QEntities.JOKE.value);
+        commonBooleanBuilder.andMatchStringFilter(booleanBuilder,
+                                                  criteria.getCategoryName(),
+                                                  QEntities.CATEGORY.name);
         return booleanBuilder;
     }
 

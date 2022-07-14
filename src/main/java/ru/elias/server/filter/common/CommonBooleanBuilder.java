@@ -9,7 +9,9 @@ import ru.elias.server.filter.base.StringFilter;
 @Component
 public class CommonBooleanBuilder {
 
-    public void andMatchStringFilter(BooleanBuilder booleanBuilder, StringFilter stringFilter, StringPath stringPath) {
+    public void andMatchStringFilter(BooleanBuilder booleanBuilder,
+                                     StringFilter stringFilter,
+                                     StringPath stringPath) {
         if (stringFilter != null) {
             if (stringFilter.getEqual() != null) {
                 booleanBuilder.and(stringPath.equalsIgnoreCase(stringFilter.getEqual()));
