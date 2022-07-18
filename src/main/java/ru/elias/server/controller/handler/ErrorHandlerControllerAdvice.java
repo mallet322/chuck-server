@@ -1,38 +1,50 @@
 package ru.elias.server.controller.handler;
 
+import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.elias.server.exception.BusinessException;
-import ru.elias.server.exception.ErrorType;
 
 @Slf4j
 @RequiredArgsConstructor
 @RestControllerAdvice
 public class ErrorHandlerControllerAdvice {
 
+    private final CustomErrorAttributes customErrorAttributes;
+
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ErrorMessage> handleNotFroundException(BusinessException e) {
+    public ResponseEntity<Map<String, Object>> handleNotFoundException(BusinessException e) {
         var errorType = e.getErrorType();
         return switch (errorType) {
             case CATEGORY_NOT_FOUND_BY_NAME, JOKE_NOT_FOUND_BY_ID ->
-                    getErrorResponse(HttpStatus.NOT_FOUND,
-                                     new ErrorMessage(errorType.getCode(),
-                                                      e.getMessage()));
-            default -> getErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
-                                        new ErrorMessage(
-                                                ErrorType.INTERNAL_SERVER_ERROR.getCode(),
-                                                e.getMessage()));
+                    ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                  .body(customErrorAttributes.getErrorAttributes(e, HttpStatus.NOT_FOUND));
+            default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                     .body(customErrorAttributes.getErrorAttributes(e,
+                                                                                    HttpStatus.INTERNAL_SERVER_ERROR));
         };
     }
 
-    private ResponseEntity<ErrorMessage> getErrorResponse(HttpStatus status,
-                                                          ErrorMessage errorMessage) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleException(Exception e) {
+        var status = HttpStatus.INTERNAL_SERVER_ERROR;
+        var body = customErrorAttributes.getErrorAttributes(e, status);
         return ResponseEntity.status(status)
-                             .body(errorMessage);
+                             .body(body);
+    }
+
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<Map<String, Object>> handleBindException(BindException e) {
+        var status = HttpStatus.BAD_REQUEST;
+        var body = customErrorAttributes.getErrorAttributes(e, status);
+        return ResponseEntity.status(status)
+                             .body(body);
     }
 
 }

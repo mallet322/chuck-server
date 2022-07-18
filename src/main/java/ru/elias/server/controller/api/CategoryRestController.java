@@ -1,5 +1,7 @@
 package ru.elias.server.controller.api;
 
+import javax.validation.Valid;
+
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,6 +48,7 @@ public class CategoryRestController {
     public ResponseEntity<Void> create(
             @Parameter(description = "Режим создания категории (авто/ручное)")
             @RequestParam(value = "auto") boolean flag,
+            @Valid
             @RequestBody(description = "Тело сообщения с категорией") CategoryDto request) {
         return categoryService.createCategories(flag, request);
     }

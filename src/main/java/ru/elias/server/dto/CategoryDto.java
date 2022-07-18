@@ -1,6 +1,7 @@
 package ru.elias.server.dto;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,7 +20,8 @@ import lombok.Setter;
 public class CategoryDto {
 
     @Parameter(description = "Наименование категории")
-    @NotBlank
+    @NotBlank//(message = "Наименование категории не должно быть пыстым!")
+    @NotNull//(message = "Наименование категории не должно быть равным нулю!")
     private String name;
 
 }
