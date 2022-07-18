@@ -5,11 +5,12 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import ru.elias.server.model.Joke;
 
-public interface JokeRepository extends JpaRepository<Joke, UUID>, QuerydslPredicateExecutor<Joke> {
+public interface JokeRepository extends CrudRepository<Joke, Long>, QuerydslPredicateExecutor<Joke> {
 
     @Query(nativeQuery = true,
            value = "select j.* "
@@ -21,10 +22,10 @@ public interface JokeRepository extends JpaRepository<Joke, UUID>, QuerydslPredi
     @Query(nativeQuery = true,
            value = "select j.* "
                    + "from jokes j "
-                   + "where category_id = ?1 "
+                   + "where category_id = :categoryId "
                    + "order by random() "
                    + "limit 1")
-    Joke findRandomJokeByCategoryId(Long categoryId);
+    Joke findRandomJokeByCategoryId(@Param("categoryId") Long categoryId);
 
     @Query("select count(j) "
             + "from Category c "

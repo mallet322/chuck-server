@@ -114,7 +114,9 @@ public class JokeServiceImpl implements JokeService {
                     .value(jokeClient.getRandomJokeByCategory(category.getName()))
                     .category(category)
                     .build();
-        jokeRepository.save(joke);
+        if (!jokeRepository.exists(QEntities.JOKE.value.eq(joke.getValue()))) {
+            jokeRepository.save(joke);
+        }
     }
 
     private Category getCategory(String categoryName) {

@@ -8,3 +8,8 @@ spring:
     hibernate:
       ddl-auto: update
     database: h2
+springdoc:
+  packages-to-scan: ru.elias.server
+  swagger-ui:
+    path: /swagger-ui
+    doc-expansion: none

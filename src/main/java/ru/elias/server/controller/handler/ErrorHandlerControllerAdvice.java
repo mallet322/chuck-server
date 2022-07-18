@@ -18,6 +18,14 @@ public class ErrorHandlerControllerAdvice {
 
     private final CustomErrorAttributes customErrorAttributes;
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleException(Exception e) {
+        var status = HttpStatus.INTERNAL_SERVER_ERROR;
+        var body = customErrorAttributes.getErrorAttributes(e, status);
+        return ResponseEntity.status(status)
+                             .body(body);
+    }
+
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<Map<String, Object>> handleNotFoundException(BusinessException e) {
         var errorType = e.getErrorType();
@@ -29,14 +37,6 @@ public class ErrorHandlerControllerAdvice {
                                      .body(customErrorAttributes.getErrorAttributes(e,
                                                                                     HttpStatus.INTERNAL_SERVER_ERROR));
         };
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleException(Exception e) {
-        var status = HttpStatus.INTERNAL_SERVER_ERROR;
-        var body = customErrorAttributes.getErrorAttributes(e, status);
-        return ResponseEntity.status(status)
-                             .body(body);
     }
 
     @ExceptionHandler(BindException.class)

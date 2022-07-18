@@ -70,8 +70,7 @@ public class JokeRestController {
 
     @Operation(summary = "Получение списка шуток по критерию")
     @GetMapping(ApiPathConstants.QUERY)
-    public ResponseEntity<List<JokeDto>> getJokesByCriteria(
-            @ParameterObject JokeQueryCriteria criteria) {
+    public ResponseEntity<List<JokeDto>> getJokesByCriteria(@ParameterObject JokeQueryCriteria criteria) {
         return jokeService.getRandomJokeByCriteria(criteria);
     }
 

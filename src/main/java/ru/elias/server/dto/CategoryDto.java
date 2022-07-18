@@ -20,8 +20,8 @@ import lombok.Setter;
 public class CategoryDto {
 
     @Parameter(description = "Наименование категории")
-    @NotBlank//(message = "Наименование категории не должно быть пыстым!")
-    @NotNull//(message = "Наименование категории не должно быть равным нулю!")
+    @NotBlank(message = "Наименование категории не должно быть пыстым!")
+    @NotNull(message = "Наименование категории не должно быть равным нулю!")
     private String name;
 
 }
