@@ -1,15 +1,13 @@
 spring:
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:testdb;DB_CLOSE_ON_EXIT=FALSE
-    username: sa
-    password:
-  jpa:
-    hibernate:
-      ddl-auto: update
-    database: h2
-springdoc:
-  packages-to-scan: ru.elias.server
-  swagger-ui:
-    path: /swagger-ui
-    doc-expansion: none
+    url: ${DB_URL:jdbc:tc:postgresql:9.6.8:test}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME:test}
+    password: ${DB_PASSWORD:test}
+  liquibase:
+    url: ${DB_URL:test}
+    enabled: true
+    user: test
+    password: test
+  messages:
+    basename: i18n/messages

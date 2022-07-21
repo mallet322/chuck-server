@@ -16,4 +16,7 @@ public interface CategoryMapper {
    @Mapping(source = "entity.name", target = "name")
    CategoryDto map(Category entity);
 
+   @Mapping(source = "name", target = "name")
+   Category map(String name);
+
 }

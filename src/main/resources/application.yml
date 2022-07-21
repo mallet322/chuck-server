@@ -3,6 +3,12 @@ spring:
     url: jdbc:postgresql://localhost:5433/chuck
     username: postgres
     password: pass
+  liquibase:
+    url: jdbc:postgresql://localhost:5433/chuck
+    enabled: true
+    test:
+      database:
+        replace: none
   messages:
     basename: i18n/messages
 springdoc:

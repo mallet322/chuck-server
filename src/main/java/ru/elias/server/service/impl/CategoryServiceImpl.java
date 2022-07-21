@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,7 +67,7 @@ public class CategoryServiceImpl implements CategoryService {
         } else {
             saveCategory(categoryRequest);
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     private void saveCategory(CategoryDto categoryRequest) {
@@ -78,9 +79,7 @@ public class CategoryServiceImpl implements CategoryService {
         var categories = jokeClient.getAllCategories()
                                    .stream()
                                    .filter(el -> !getExistingCategoryNames().contains(el))
-                                   .map(s -> Category.builder()
-                                                     .name(s)
-                                                     .build())
+                                   .map(categoryMapper::map)
                                    .collect(Collectors.toList());
         categoryRepository.saveAll(categories);
     }
