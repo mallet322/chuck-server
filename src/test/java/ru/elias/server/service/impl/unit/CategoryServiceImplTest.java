@@ -3,7 +3,8 @@ package ru.elias.server.service.impl.unit;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -50,8 +51,8 @@ class CategoryServiceImplTest {
                .thenReturn(mockedDto);
         var expected = CategoryDto.builder().name("some-cat").build();
         var actual = categoryService.getCategoryByName("some-cat");
-        Assertions.assertNotNull(actual.getBody());
-        Assertions.assertEquals(expected.getName(), actual.getBody().getName());
+        assertThat(actual.getBody()).isNotNull();
+        assertThat(actual.getBody().getName()).isEqualTo(expected.getName());
         Mockito.verify(categoryMapper).map(ArgumentMatchers.any(Category.class));
         Mockito.verifyNoMoreInteractions(categoryMapper, jokeClient, messageSourceHelper);
     }
@@ -62,8 +63,9 @@ class CategoryServiceImplTest {
                .thenReturn(Optional.empty());
         Mockito.when(messageSourceHelper.getMessage(ArgumentMatchers.any(ErrorType.class), ArgumentMatchers.any()))
                .thenReturn("some-msg");
-        Assertions.assertThrows(BusinessException.class,
-                                () -> categoryService.getCategoryByName("some-cat"));
+        assertThatThrownBy(() -> categoryService.getCategoryByName("some-cat"))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("some-msg");
         Mockito.verify(messageSourceHelper).getMessage(ArgumentMatchers.any(), ArgumentMatchers.any());
         Mockito.verifyNoMoreInteractions(categoryMapper, jokeClient, messageSourceHelper);
     }
@@ -71,21 +73,30 @@ class CategoryServiceImplTest {
     @Test
     void whenGetAllCategoriesThenReturnListDtoCategories() {
         var mockedCategories = List.of(
-                Category.builder().name("some-cat-1").build(),
-                Category.builder().name("some-cat-2").build(),
-                Category.builder().name("some-cat-3").build()
+                Category.builder().name("some-cat").build(),
+                Category.builder().name("some-cat").build(),
+                Category.builder().name("some-cat").build()
         );
 
         var mockedDtos = List.of(
-                CategoryDto.builder().name("some-cat-1").build(),
-                CategoryDto.builder().name("some-cat-2").build(),
-                CategoryDto.builder().name("some-cat-3").build()
+                CategoryDto.builder().name("some-cat").build(),
+                CategoryDto.builder().name("some-cat").build(),
+                CategoryDto.builder().name("some-cat").build()
         );
         Mockito.when(categoryRepository.findAll())
                .thenReturn(mockedCategories);
+        Mockito.when(categoryMapper.map(ArgumentMatchers.any(Category.class)))
+                .thenReturn(mockedDtos.get(0));
         var actual = categoryService.getAllCategories();
-        Assertions.assertNotNull(actual.getBody());
-        Assertions.assertEquals(mockedDtos.size(), actual.getBody().size());
+        assertThat(actual.getBody())
+                .isNotNull()
+                .hasSize(mockedDtos.size());
+        var expectedCategoryNames = mockedCategories.stream()
+                                                    .map(Category::getName)
+                                                    .toArray(String[]::new);
+        assertThat(actual.getBody())
+                .flatExtracting(CategoryDto::getName)
+                .containsExactlyInAnyOrder(expectedCategoryNames);
         Mockito.verify(categoryMapper, Mockito.times(3)).map(ArgumentMatchers.any(Category.class));
         Mockito.verifyNoMoreInteractions(categoryMapper, jokeClient, messageSourceHelper);
     }
@@ -99,7 +110,7 @@ class CategoryServiceImplTest {
         Mockito.when(categoryMapper.map(ArgumentMatchers.any(CategoryDto.class)))
                 .thenReturn(mockedCategory);
         var actual = categoryService.createCategories(false, mockedDto);
-        Assertions.assertEquals(HttpStatus.CREATED.value(), actual.getStatusCode().value());
+        assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         Mockito.verify(categoryMapper, Mockito.times(1)).map(ArgumentMatchers.any(CategoryDto.class));
         Mockito.verify(categoryRepository, Mockito.times(1)).save(ArgumentMatchers.any(Category.class));
         Mockito.verifyNoMoreInteractions(jokeClient);
@@ -110,7 +121,7 @@ class CategoryServiceImplTest {
         var categoryNames = List.of("some-cat-1", "some-cat-2", "some-cat-3");
         Mockito.when(jokeClient.getAllCategories()).thenReturn(categoryNames);
         var actual = categoryService.createCategories(true, null);
-        Assertions.assertEquals(HttpStatus.CREATED.value(), actual.getStatusCode().value());
+        assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         Mockito.verify(jokeClient, Mockito.times(1)).getAllCategories();
         Mockito.verify(categoryMapper, Mockito.times(3)).map(ArgumentMatchers.anyString());
         Mockito.verify(categoryRepository, Mockito.times(3)).findAll();
