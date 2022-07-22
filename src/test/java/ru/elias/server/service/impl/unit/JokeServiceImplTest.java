@@ -60,7 +60,6 @@ class JokeServiceImplTest {
     private JokeServiceImpl jokeService;
 
     @Test
-    @DisplayName("Создание шутки в автоматическом режиме. Ожидаемый результат - ResponseEntity с CREATED")
     void whenCreateJokeWithAutoModeThenCreateJoke() {
         var mockedCategory = Category.builder().name("some-cat").build();
         Mockito.when(categoryRepository.findCategoryByName(ArgumentMatchers.anyString()))
@@ -76,8 +75,6 @@ class JokeServiceImplTest {
     }
 
     @Test
-    @DisplayName("Создание шутки в автоматическом режиме."
-            + "Ожидаемый результат - Выбрасывание BusinessException из-за не найденной категории")
     void whenCreateJokeWithAutoModeThenNotCreateJokeAndThrowBusinessExeption() {
         var mockedCategory = Category.builder().name("some-cat").build();
         Mockito.when(categoryRepository.findCategoryByName(ArgumentMatchers.anyString()))
@@ -93,7 +90,6 @@ class JokeServiceImplTest {
     }
 
     @Test
-    @DisplayName("Создание шутки в ручном режиме. Ожидаемый результат - ResponseEntity с CREATED")
     void whenCreateJokeWithManualMode() {
         var mockedCategory = Category.builder().name("some-cat").build();
         var mockedJoke = Joke.builder().value("some-joke").category(mockedCategory).build();
@@ -109,7 +105,6 @@ class JokeServiceImplTest {
     }
 
     @Test
-    @DisplayName("Получение случайной шутки из замоканной бд. Ожидаемый результат - Dto с шуткой и категорией")
     void whenGetRandomJokeThenReturnJokeDto() {
         var mockedCategory = Category.builder().name("some-cat").build();
         var mockedJoke = Joke.builder().value("some-joke").category(mockedCategory).build();
@@ -126,8 +121,6 @@ class JokeServiceImplTest {
     }
 
     @Test
-    @DisplayName("Получение случайной шутки из замоканной бд по наименованию категории. "
-            + "Ожидаемый результат - Dto с шуткой и категорией")
     void whenGetRandomJokeByCategoryThenReturnJokeDto() {
         var mockedCategory = Category.builder().id(1L).name("some-cat").build();
         var mockedJoke = Joke.builder().value("some-joke").category(mockedCategory).build();
@@ -149,8 +142,6 @@ class JokeServiceImplTest {
     }
 
     @Test
-    @DisplayName("Получение статистики по шуткам в категориях из замоканной бд. "
-            + "Ожидаемый результат - Dto со статистикой")
     void whenGetJokesCountStatisticsThenReturnDtoWithStatistic() {
         var mockedCategories = List.of(
                 Category.builder().id(1L).name("some-cat-1").build(),

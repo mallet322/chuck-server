@@ -43,7 +43,6 @@ class CategoryRestControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("Получение категории по наименованию. Ожидаемый результат - 200 ОК.")
     void whenGetCategoryByNameThenReturn200() throws Exception {
         Mockito.when(categoryService.getCategoryByName(ArgumentMatchers.anyString()))
                 .thenReturn(ResponseEntity.ok(CategoryDto.builder().name("some-category").build()));
@@ -51,7 +50,6 @@ class CategoryRestControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("Получение категории по наименованию. Ожидаемый результат - 404 Категория не найдена.")
     void whenGetCategoryByNameThenReturn404WithCategoryNotFoundException() throws Exception {
         Mockito.when(categoryService.getCategoryByName(ArgumentMatchers.anyString()))
                 .thenThrow(new BusinessException(ErrorType.CATEGORY_NOT_FOUND_BY_NAME));
@@ -62,7 +60,6 @@ class CategoryRestControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("Получение всех категории. Ожидаемый результат - 200 ОК.")
     void whenGetAllCategoriesThenReturn200() throws Exception {
         Mockito.when(categoryService.getAllCategories())
                .thenReturn(ResponseEntity.ok(List.of(CategoryDto.builder().name("some-category").build())));
@@ -70,7 +67,6 @@ class CategoryRestControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("Создание категории в автоматическом режиме должно возвращать 201 Created")
     void whenCreateCategoryWithAutoModeThenReturn201() throws Exception {
         Mockito.when(categoryService.createCategories(ArgumentMatchers.anyBoolean(),
                                                       ArgumentMatchers.any()))
@@ -79,7 +75,6 @@ class CategoryRestControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("Создание категории в ручном режиме должно возвращать 201 Created")
     void whenCreateCategoryWithManualModeThenReturn201() throws Exception {
         Mockito.when(categoryService.createCategories(ArgumentMatchers.anyBoolean(),
                                                       ArgumentMatchers.any()))

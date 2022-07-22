@@ -47,7 +47,6 @@ class JokeRestControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("Получение шутки по идентификатору. Ожидаемый результат - 200 ОК.")
     void whenGetJokeByIdThenReturn200() throws Exception {
         Mockito.when(jokeService.getJokeById(Mockito.anyLong()))
                .thenReturn(ResponseEntity.ok(JokeDto.builder()
@@ -59,7 +58,6 @@ class JokeRestControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("Получение шутки по идентификатору. Ожидаемый результат - 404 Шутка не найдена.")
     void whenGetJokeByIdThenReturn404WithJokeNotFoundException() throws Exception {
         Mockito.when(jokeService.getJokeById(ArgumentMatchers.anyLong()))
                .thenThrow(new BusinessException(ErrorType.JOKE_NOT_FOUND_BY_ID));
@@ -67,7 +65,6 @@ class JokeRestControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("Получение случайной шутки. Ожидаемый результат - 200 ОК")
     void whenGetRandomJokeThenReturn200() throws Exception {
         Mockito.when(jokeService.getRandomJoke())
                .thenReturn(ResponseEntity.ok(JokeDto.builder()
@@ -79,7 +76,6 @@ class JokeRestControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("Получение случайной шутки по наименованию категории. Ожидаемый результат - 200 ОК")
     void getRandomJokeByCategory() throws Exception {
         Mockito.when(jokeService.getRandomJokeByCategory(ArgumentMatchers.anyString()))
                .thenReturn(ResponseEntity.ok(JokeDto.builder()
@@ -91,7 +87,6 @@ class JokeRestControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("Создание шутки в автоматическом режиме. Ожидаемый результат - 201 Created")
     void whenCreateJokeWithAutoModeThenReturn201() throws Exception {
         Mockito.when(jokeService.createJoke(ArgumentMatchers.anyBoolean(),
                                             ArgumentMatchers.anyString(),
@@ -101,7 +96,6 @@ class JokeRestControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("Создание шутки в ручном режиме. Ожидаемый результат - 201 Created")
     void whenCreateJokeWithManualModeThenReturn201() throws Exception {
         Mockito.when(jokeService.createJoke(ArgumentMatchers.anyBoolean(),
                                             ArgumentMatchers.anyString(),
@@ -116,7 +110,6 @@ class JokeRestControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("Получение статистики шуток по категориям. Ожидаемый результат - 200 ОК")
     void getJokesCountStatistics() throws Exception {
         Mockito.when(jokeService.getJokesCountStatistics())
                .thenReturn(ResponseEntity.ok(List.of(JokesGeneralStatistic.builder()
@@ -128,7 +121,6 @@ class JokeRestControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("Получение шутки по критерии. Ожидаемый результат - 200 ОК")
     void getJokesByCriteria() throws Exception {
         var criteria = getCriteria();
         Mockito.when(jokeService.getRandomJokeByCriteria(criteria))

@@ -1,6 +1,5 @@
 package ru.elias.server.model;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -36,7 +35,7 @@ public class Category extends AbstractAuditableEntity implements Serializable {
 
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "category", orphanRemoval = true)
+    @OneToMany(mappedBy = "category", orphanRemoval = true)
     private List<Joke> jokes = new ArrayList<>();
 
     public void addJoke(Joke joke) {
