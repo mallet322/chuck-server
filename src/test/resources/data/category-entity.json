@@ -1,18 +1,4 @@
 {
   "id": 1,
-  "name": "some-cat",
-  "jokes": [
-    {
-      "id": 1,
-      "value": "some-joke-1"
-    },
-    {
-      "id": 2,
-      "value": "some-joke-2"
-    },
-    {
-      "id": 3,
-      "value": "some-joke-3"
-    }
-  ]
+  "name": "some-cat"
 }

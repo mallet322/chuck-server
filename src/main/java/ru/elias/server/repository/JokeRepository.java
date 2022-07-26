@@ -1,13 +1,9 @@
 package ru.elias.server.repository;
 
-import java.util.UUID;
-
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
-
 import ru.elias.server.model.Joke;
 
 public interface JokeRepository extends CrudRepository<Joke, Long>, QuerydslPredicateExecutor<Joke> {

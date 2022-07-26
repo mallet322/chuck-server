@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import ru.elias.server.client.JokeClient;
 import ru.elias.server.dto.JokeDto;
 import ru.elias.server.dto.JokesGeneralStatistic;
@@ -112,10 +111,10 @@ public class JokeServiceImpl implements JokeService {
         var category = getCategory(categoryName);
         var joke =
                 Joke.builder()
-                    .value(jokeClient.getRandomJokeByCategory(category.getName()))
+                    .name(jokeClient.getRandomJokeByCategory(category.getName()))
                     .category(category)
                     .build();
-        if (!jokeRepository.exists(QEntities.JOKE.value.eq(joke.getValue()))) {
+        if (!jokeRepository.exists(QEntities.JOKE.name.eq(joke.getName()))) {
             jokeRepository.save(joke);
         }
     }
@@ -144,7 +143,7 @@ public class JokeServiceImpl implements JokeService {
         var booleanBuilder = new BooleanBuilder();
         commonBooleanBuilder.andMatchStringFilter(booleanBuilder,
                                                   criteria.getJokeName(),
-                                                  QEntities.JOKE.value);
+                                                  QEntities.JOKE.name);
         commonBooleanBuilder.andMatchStringFilter(booleanBuilder,
                                                   criteria.getCategoryName(),
                                                   QEntities.CATEGORY.name);

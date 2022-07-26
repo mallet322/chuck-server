@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS categories
 CREATE TABLE IF NOT EXISTS jokes
 (
     id          SERIAL PRIMARY KEY,
-    value       VARCHAR(255) NOT NULL,
+    name        VARCHAR(255) NOT NULL,
     category_id INT REFERENCES categories (id),
     created_at  TIMESTAMP
 );
---rollback DROP TABLE authorities;
+--rollback DROP TABLE jokes;

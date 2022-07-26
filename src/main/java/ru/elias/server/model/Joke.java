@@ -1,5 +1,6 @@
 package ru.elias.server.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -33,7 +34,7 @@ public class Joke extends AbstractAuditableEntity implements Serializable {
     @EqualsAndHashCode.Include
     private Long id;
 
-    private String value;
+    private String name;
 
     @ManyToOne
     @JoinColumn(name = "category_id")

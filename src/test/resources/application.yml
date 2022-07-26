@@ -1,13 +1,15 @@
 spring:
   datasource:
-    url: ${DB_URL:jdbc:tc:postgresql:9.6.8:test}
-    driver-class-name: org.postgresql.Driver
-    username: ${DB_USERNAME:test}
-    password: ${DB_PASSWORD:test}
+    url: jdbc:h2:mem:testdb;DB_CLOSE_ON_EXIT=FALSE;MODE=LEGACY;DATABASE_TO_UPPER=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: sa
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+##    hibernate.ddl-auto: create-drop
   liquibase:
-    url: ${DB_URL:test}
-    enabled: true
-    user: test
-    password: test
+       enabled: true
   messages:
     basename: i18n/messages

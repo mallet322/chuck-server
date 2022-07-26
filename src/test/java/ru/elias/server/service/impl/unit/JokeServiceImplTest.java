@@ -92,10 +92,10 @@ class JokeServiceImplTest {
     @Test
     void whenCreateJokeWithManualMode() {
         var mockedCategory = Category.builder().name("some-cat").build();
-        var mockedJoke = Joke.builder().value("some-joke").category(mockedCategory).build();
+        var mockedJoke = Joke.builder().name("some-joke").category(mockedCategory).build();
         Mockito.when(jokeMapper.map(ArgumentMatchers.any(JokeDto.class)))
                .thenReturn(mockedJoke);
-        var dto = JokeDto.builder().joke(mockedJoke.getValue()).category(mockedCategory.getName()).build();
+        var dto = JokeDto.builder().joke(mockedJoke.getName()).category(mockedCategory.getName()).build();
         var actual = jokeService.createJoke(false, null, dto);
         assertThat(actual.getBody()).isNull();
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -107,7 +107,7 @@ class JokeServiceImplTest {
     @Test
     void whenGetRandomJokeThenReturnJokeDto() {
         var mockedCategory = Category.builder().name("some-cat").build();
-        var mockedJoke = Joke.builder().value("some-joke").category(mockedCategory).build();
+        var mockedJoke = Joke.builder().name("some-joke").category(mockedCategory).build();
         var mockedJokeDto = JokeDto.builder().joke("some-joke").category("some-cat").build();
         Mockito.when(jokeMapper.map(ArgumentMatchers.any(Joke.class))).thenReturn(mockedJokeDto);
         Mockito.when(jokeRepository.findRandomJoke()).thenReturn(mockedJoke);
@@ -123,7 +123,7 @@ class JokeServiceImplTest {
     @Test
     void whenGetRandomJokeByCategoryThenReturnJokeDto() {
         var mockedCategory = Category.builder().id(1L).name("some-cat").build();
-        var mockedJoke = Joke.builder().value("some-joke").category(mockedCategory).build();
+        var mockedJoke = Joke.builder().name("some-joke").category(mockedCategory).build();
         var mockedJokeDto = JokeDto.builder().joke("some-joke").category("some-cat").build();
         Mockito.when(categoryRepository.findCategoryByName(ArgumentMatchers.anyString()))
                .thenReturn(Optional.of(mockedCategory));
@@ -183,9 +183,9 @@ class JokeServiceImplTest {
     void whenGetRandomJokeByCriteriaThenReturnDtoList() {
         var cat = Category.builder().name("some-cat").build();
         var mockedList = List.of(
-                Joke.builder().value("some-joke").category(cat).build(),
-                Joke.builder().value("some-joke").category(cat).build(),
-                Joke.builder().value("some-joke").category(cat).build()
+                Joke.builder().name("some-joke").category(cat).build(),
+                Joke.builder().name("some-joke").category(cat).build(),
+                Joke.builder().name("some-joke").category(cat).build()
         );
         var mockedJokeDto = JokeDto.builder().joke("some-joke").category("some-cat").build();
         Mockito.when(jokeQueryCustomRepository.findJokesByPredicate(ArgumentMatchers.any(Predicate.class)))
@@ -201,7 +201,7 @@ class JokeServiceImplTest {
         assertThat(actual.getBody())
                 .flatExtracting(JokeDto::getJoke)
                 .containsExactlyInAnyOrder(mockedList.stream()
-                                                     .map(Joke::getValue)
+                                                     .map(Joke::getName)
                                                      .toArray(String[]::new));
         Mockito.verify(jokeQueryCustomRepository, Mockito.times(1))
                .findJokesByPredicate(ArgumentMatchers.any(Predicate.class));
@@ -218,7 +218,7 @@ class JokeServiceImplTest {
             + "Ожидаемый результат - Dto с шуткой и категорией")
     void whenGetJokeByIdThenReturnJokeDto() {
         var mockedCategory = Category.builder().id(1L).name("some-cat").build();
-        var mockedJoke = Joke.builder().value("some-joke").category(mockedCategory).build();
+        var mockedJoke = Joke.builder().name("some-joke").category(mockedCategory).build();
         var mockedJokeDto = JokeDto.builder().joke("some-joke").category("some-cat").build();
         Mockito.when(jokeRepository.findOne(ArgumentMatchers.any(Predicate.class)))
                 .thenReturn(Optional.of(mockedJoke));

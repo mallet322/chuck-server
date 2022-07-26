@@ -1,7 +1,6 @@
 package ru.elias.server.util;
 
 import lombok.experimental.UtilityClass;
-
 import ru.elias.server.model.QCategory;
 import ru.elias.server.model.QJoke;
 

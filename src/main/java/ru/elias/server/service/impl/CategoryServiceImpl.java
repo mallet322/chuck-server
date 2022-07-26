@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import ru.elias.server.client.JokeClient;
 import ru.elias.server.dto.CategoryDto;
 import ru.elias.server.exception.BusinessException;

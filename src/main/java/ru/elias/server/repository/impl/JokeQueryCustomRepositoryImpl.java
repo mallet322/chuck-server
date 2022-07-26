@@ -8,9 +8,8 @@ import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ru.elias.server.repository.JokeQueryCustomRepository;
-
 import ru.elias.server.model.Joke;
+import ru.elias.server.repository.JokeQueryCustomRepository;
 import ru.elias.server.util.QEntities;
 
 @Repository
