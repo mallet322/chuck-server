@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.elias.server.client.JokeClient;
+import ru.elias.server.client.JokeReactiveClient;
 import ru.elias.server.dto.CategoryDto;
 import ru.elias.server.exception.BusinessException;
 import ru.elias.server.exception.ErrorType;
@@ -26,7 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    private final JokeClient jokeClient;
+    private final JokeReactiveClient jokeClient;
 
     private final CategoryMapper categoryMapper;
 
@@ -76,6 +76,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     private void saveCategoriesFromIntegration() {
         var categories = jokeClient.getAllCategories()
+                                   .blockOptional()
+                                   .orElseThrow()
                                    .stream()
                                    .filter(el -> !getExistingCategoryNames().contains(el))
                                    .map(categoryMapper::map)

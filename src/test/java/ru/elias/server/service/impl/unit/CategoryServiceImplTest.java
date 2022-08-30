@@ -11,9 +11,13 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import ru.elias.server.client.JokeClient;
+import reactor.core.publisher.Mono;
+import ru.elias.server.client.JokeReactiveClient;
 import ru.elias.server.dto.CategoryDto;
 import ru.elias.server.exception.BusinessException;
 import ru.elias.server.exception.ErrorType;
@@ -30,7 +34,7 @@ class CategoryServiceImplTest {
     private CategoryRepository categoryRepository;
 
     @Mock
-    private JokeClient jokeClient;
+    private JokeReactiveClient jokeClient;
 
     @Mock
     private CategoryMapper categoryMapper;
@@ -45,29 +49,29 @@ class CategoryServiceImplTest {
     void whenGetCategoryByNameThenReturnCategoryDto() {
         var mockedCategory = Category.builder().name("some-cat").build();
         var mockedDto = CategoryDto.builder().name("some-cat").build();
-        Mockito.when(categoryRepository.findCategoryByName(ArgumentMatchers.anyString()))
+        when(categoryRepository.findCategoryByName(ArgumentMatchers.anyString()))
                .thenReturn(Optional.of(mockedCategory));
-        Mockito.when(categoryMapper.map(ArgumentMatchers.any(Category.class)))
+        when(categoryMapper.map(ArgumentMatchers.any(Category.class)))
                .thenReturn(mockedDto);
         var expected = CategoryDto.builder().name("some-cat").build();
         var actual = categoryService.getCategoryByName("some-cat");
         assertThat(actual.getBody()).isNotNull();
         assertThat(actual.getBody().getName()).isEqualTo(expected.getName());
-        Mockito.verify(categoryMapper).map(ArgumentMatchers.any(Category.class));
-        Mockito.verifyNoMoreInteractions(categoryMapper, jokeClient, messageSourceHelper);
+        verify(categoryMapper).map(ArgumentMatchers.any(Category.class));
+        verifyNoMoreInteractions(categoryMapper, jokeClient, messageSourceHelper);
     }
 
     @Test
     void whenGetCategoryByNameThenThrowException() {
-        Mockito.when(categoryRepository.findCategoryByName(ArgumentMatchers.anyString()))
+        when(categoryRepository.findCategoryByName(ArgumentMatchers.anyString()))
                .thenReturn(Optional.empty());
-        Mockito.when(messageSourceHelper.getMessage(ArgumentMatchers.any(ErrorType.class), ArgumentMatchers.any()))
+        when(messageSourceHelper.getMessage(ArgumentMatchers.any(ErrorType.class), ArgumentMatchers.any()))
                .thenReturn("some-msg");
         assertThatThrownBy(() -> categoryService.getCategoryByName("some-cat"))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("some-msg");
-        Mockito.verify(messageSourceHelper).getMessage(ArgumentMatchers.any(), ArgumentMatchers.any());
-        Mockito.verifyNoMoreInteractions(categoryMapper, jokeClient, messageSourceHelper);
+        verify(messageSourceHelper).getMessage(ArgumentMatchers.any(), ArgumentMatchers.any());
+        verifyNoMoreInteractions(categoryMapper, jokeClient, messageSourceHelper);
     }
 
     @Test
@@ -83,9 +87,9 @@ class CategoryServiceImplTest {
                 CategoryDto.builder().name("some-cat").build(),
                 CategoryDto.builder().name("some-cat").build()
         );
-        Mockito.when(categoryRepository.findAll())
+        when(categoryRepository.findAll())
                .thenReturn(mockedCategories);
-        Mockito.when(categoryMapper.map(ArgumentMatchers.any(Category.class)))
+        when(categoryMapper.map(ArgumentMatchers.any(Category.class)))
                 .thenReturn(mockedDtos.get(0));
         var actual = categoryService.getAllCategories();
         assertThat(actual.getBody())
@@ -97,36 +101,36 @@ class CategoryServiceImplTest {
         assertThat(actual.getBody())
                 .flatExtracting(CategoryDto::getName)
                 .containsExactlyInAnyOrder(expectedCategoryNames);
-        Mockito.verify(categoryMapper, Mockito.times(3)).map(ArgumentMatchers.any(Category.class));
-        Mockito.verifyNoMoreInteractions(categoryMapper, jokeClient, messageSourceHelper);
+        verify(categoryMapper, Mockito.times(3)).map(ArgumentMatchers.any(Category.class));
+        verifyNoMoreInteractions(categoryMapper, jokeClient, messageSourceHelper);
     }
 
     @Test
     void whenCreateCategoryOnManualMode() {
         var mockedCategory = Category.builder().name("some-cat").build();
         var mockedDto = CategoryDto.builder().name("some-cat").build();
-        Mockito.when(categoryRepository.save(ArgumentMatchers.any(Category.class)))
+        when(categoryRepository.save(ArgumentMatchers.any(Category.class)))
                 .thenReturn(mockedCategory);
-        Mockito.when(categoryMapper.map(ArgumentMatchers.any(CategoryDto.class)))
+        when(categoryMapper.map(ArgumentMatchers.any(CategoryDto.class)))
                 .thenReturn(mockedCategory);
         var actual = categoryService.createCategories(false, mockedDto);
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        Mockito.verify(categoryMapper, Mockito.times(1)).map(ArgumentMatchers.any(CategoryDto.class));
-        Mockito.verify(categoryRepository, Mockito.times(1)).save(ArgumentMatchers.any(Category.class));
-        Mockito.verifyNoMoreInteractions(jokeClient);
+        verify(categoryMapper, Mockito.times(1)).map(ArgumentMatchers.any(CategoryDto.class));
+        verify(categoryRepository, Mockito.times(1)).save(ArgumentMatchers.any(Category.class));
+        verifyNoMoreInteractions(jokeClient);
     }
 
     @Test
     void whenCreateCategoryOnAutoMode() {
-        var categoryNames = List.of("some-cat-1", "some-cat-2", "some-cat-3");
-        Mockito.when(jokeClient.getAllCategories()).thenReturn(categoryNames);
+        var categoryNames = Mono.just(List.of("some-cat-1", "some-cat-2", "some-cat-3"));
+        when(jokeClient.getAllCategories()).thenReturn(categoryNames);
         var actual = categoryService.createCategories(true, null);
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        Mockito.verify(jokeClient, Mockito.times(1)).getAllCategories();
-        Mockito.verify(categoryMapper, Mockito.times(3)).map(ArgumentMatchers.anyString());
-        Mockito.verify(categoryRepository, Mockito.times(3)).findAll();
-        Mockito.verify(categoryRepository, Mockito.times(1)).saveAll(ArgumentMatchers.any());
-        Mockito.verifyNoMoreInteractions(categoryMapper, jokeClient, messageSourceHelper);
+        verify(jokeClient, Mockito.times(1)).getAllCategories();
+        verify(categoryMapper, Mockito.times(3)).map(ArgumentMatchers.anyString());
+        verify(categoryRepository, Mockito.times(3)).findAll();
+        verify(categoryRepository, Mockito.times(1)).saveAll(ArgumentMatchers.any());
+        verifyNoMoreInteractions(categoryMapper, jokeClient, messageSourceHelper);
     }
 
 }

@@ -3,6 +3,9 @@ package ru.elias.server.service.impl.unit;
 import java.util.List;
 import java.util.Optional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.core.types.Predicate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -13,9 +16,12 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import ru.elias.server.client.JokeClient;
+import reactor.core.publisher.Mono;
+import ru.elias.server.client.JokeReactiveClient;
 import ru.elias.server.dto.JokeDto;
 import ru.elias.server.dto.JokesGeneralStatistic;
 import ru.elias.server.exception.BusinessException;
@@ -48,7 +54,7 @@ class JokeServiceImplTest {
     private JokeMapper jokeMapper;
 
     @Mock
-    private JokeClient jokeClient;
+    private JokeReactiveClient jokeClient;
 
     @Mock
     private MessageSourceHelper messageSourceHelper;
@@ -56,36 +62,41 @@ class JokeServiceImplTest {
     @Mock
     private CommonBooleanBuilder commonBooleanBuilder;
 
+    @Mock
+    private ObjectMapper objectMapper;
+
     @InjectMocks
     private JokeServiceImpl jokeService;
 
     @Test
-    void whenCreateJokeWithAutoModeThenCreateJoke() {
+    void whenCreateJokeWithAutoModeThenCreateJoke() throws JsonProcessingException {
         var mockedCategory = Category.builder().name("some-cat").build();
-        Mockito.when(categoryRepository.findCategoryByName(ArgumentMatchers.anyString()))
+        var jokeName = Mono.just(mockedCategory.getName());
+        when(categoryRepository.findCategoryByName(ArgumentMatchers.anyString()))
                .thenReturn(Optional.of(mockedCategory));
-        Mockito.when(jokeClient.getRandomJokeByCategory(ArgumentMatchers.anyString()))
-               .thenReturn(mockedCategory.getName());
+        when(jokeClient.getRandomJokeByCategory(ArgumentMatchers.anyString()))
+               .thenReturn(jokeName);
+        mockObjectMapper();
         var actual = jokeService.createJoke(true, mockedCategory.getName(), null);
         assertThat(actual.getBody()).isNull();
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        Mockito.verify(jokeRepository, Mockito.times(1)).save(ArgumentMatchers.any(Joke.class));
-        Mockito.verify(jokeRepository, Mockito.times(1)).exists(ArgumentMatchers.any(Predicate.class));
+        verify(jokeRepository, Mockito.times(1)).save(ArgumentMatchers.any(Joke.class));
+        verify(jokeRepository, Mockito.times(1)).exists(ArgumentMatchers.any(Predicate.class));
         verifyNoMoreInteractions();
     }
 
     @Test
     void whenCreateJokeWithAutoModeThenNotCreateJokeAndThrowBusinessExeption() {
         var mockedCategory = Category.builder().name("some-cat").build();
-        Mockito.when(categoryRepository.findCategoryByName(ArgumentMatchers.anyString()))
+        when(categoryRepository.findCategoryByName(ArgumentMatchers.anyString()))
                .thenReturn(Optional.empty());
-        Mockito.when(messageSourceHelper.getMessage(ArgumentMatchers.any(ErrorType.class), ArgumentMatchers.any()))
+        when(messageSourceHelper.getMessage(ArgumentMatchers.any(ErrorType.class), ArgumentMatchers.any()))
                .thenReturn(ErrorType.CATEGORY_NOT_FOUND_BY_NAME.getMessage());
         assertThatThrownBy(() -> jokeService.createJoke(true, mockedCategory.getName(), null))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining(ErrorType.CATEGORY_NOT_FOUND_BY_NAME.getMessage());
-        Mockito.verify(jokeRepository, Mockito.never()).save(ArgumentMatchers.any(Joke.class));
-        Mockito.verify(jokeRepository, Mockito.never()).exists(ArgumentMatchers.any(Predicate.class));
+        verify(jokeRepository, Mockito.never()).save(ArgumentMatchers.any(Joke.class));
+        verify(jokeRepository, Mockito.never()).exists(ArgumentMatchers.any(Predicate.class));
         verifyNoMoreInteractions();
     }
 
@@ -93,14 +104,14 @@ class JokeServiceImplTest {
     void whenCreateJokeWithManualMode() {
         var mockedCategory = Category.builder().name("some-cat").build();
         var mockedJoke = Joke.builder().name("some-joke").category(mockedCategory).build();
-        Mockito.when(jokeMapper.map(ArgumentMatchers.any(JokeDto.class)))
+        when(jokeMapper.map(ArgumentMatchers.any(JokeDto.class)))
                .thenReturn(mockedJoke);
         var dto = JokeDto.builder().joke(mockedJoke.getName()).category(mockedCategory.getName()).build();
         var actual = jokeService.createJoke(false, null, dto);
         assertThat(actual.getBody()).isNull();
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        Mockito.verify(jokeMapper, Mockito.times(1)).map(ArgumentMatchers.any(JokeDto.class));
-        Mockito.verify(jokeRepository, Mockito.times(1)).save(ArgumentMatchers.any(Joke.class));
+        verify(jokeMapper, Mockito.times(1)).map(ArgumentMatchers.any(JokeDto.class));
+        verify(jokeRepository, Mockito.times(1)).save(ArgumentMatchers.any(Joke.class));
         verifyNoMoreInteractions();
     }
 
@@ -109,14 +120,14 @@ class JokeServiceImplTest {
         var mockedCategory = Category.builder().name("some-cat").build();
         var mockedJoke = Joke.builder().name("some-joke").category(mockedCategory).build();
         var mockedJokeDto = JokeDto.builder().joke("some-joke").category("some-cat").build();
-        Mockito.when(jokeMapper.map(ArgumentMatchers.any(Joke.class))).thenReturn(mockedJokeDto);
-        Mockito.when(jokeRepository.findRandomJoke()).thenReturn(mockedJoke);
+        when(jokeMapper.map(ArgumentMatchers.any(Joke.class))).thenReturn(mockedJokeDto);
+        when(jokeRepository.findRandomJoke()).thenReturn(mockedJoke);
         var actual = jokeService.getRandomJoke();
         assertThat(actual.getBody()).isNotNull();
         assertThat(actual.getBody().getJoke()).isEqualTo(mockedJokeDto.getJoke());
         assertThat(actual.getBody().getCategory()).isEqualTo(mockedJokeDto.getCategory());
-        Mockito.verify(jokeRepository, Mockito.times(1)).findRandomJoke();
-        Mockito.verify(jokeMapper, Mockito.times(1)).map(ArgumentMatchers.any(Joke.class));
+        verify(jokeRepository, Mockito.times(1)).findRandomJoke();
+        verify(jokeMapper, Mockito.times(1)).map(ArgumentMatchers.any(Joke.class));
         verifyNoMoreInteractions();
     }
 
@@ -125,38 +136,31 @@ class JokeServiceImplTest {
         var mockedCategory = Category.builder().id(1L).name("some-cat").build();
         var mockedJoke = Joke.builder().name("some-joke").category(mockedCategory).build();
         var mockedJokeDto = JokeDto.builder().joke("some-joke").category("some-cat").build();
-        Mockito.when(categoryRepository.findCategoryByName(ArgumentMatchers.anyString()))
+        when(categoryRepository.findCategoryByName(ArgumentMatchers.anyString()))
                .thenReturn(Optional.of(mockedCategory));
-        Mockito.when(jokeRepository.findRandomJokeByCategoryId(ArgumentMatchers.anyLong()))
+        when(jokeRepository.findRandomJokeByCategoryId(ArgumentMatchers.anyLong()))
                 .thenReturn(mockedJoke);
-        Mockito.when(jokeMapper.map(ArgumentMatchers.any(Joke.class)))
+        when(jokeMapper.map(ArgumentMatchers.any(Joke.class)))
                 .thenReturn(mockedJokeDto);
         var actual = jokeService.getRandomJokeByCategory("some-cat");
         assertThat(actual.getBody()).isNotNull();
         assertThat(actual.getBody().getJoke()).isEqualTo(mockedJokeDto.getJoke());
         assertThat(actual.getBody().getCategory()).isEqualTo(mockedJokeDto.getCategory());
-        Mockito.verify(categoryRepository, Mockito.times(1)).findCategoryByName(ArgumentMatchers.anyString());
-        Mockito.verify(jokeRepository, Mockito.times(1)).findRandomJokeByCategoryId(ArgumentMatchers.anyLong());
-        Mockito.verify(jokeMapper, Mockito.times(1)).map(ArgumentMatchers.any(Joke.class));
+        verify(categoryRepository, Mockito.times(1)).findCategoryByName(ArgumentMatchers.anyString());
+        verify(jokeRepository, Mockito.times(1)).findRandomJokeByCategoryId(ArgumentMatchers.anyLong());
+        verify(jokeMapper, Mockito.times(1)).map(ArgumentMatchers.any(Joke.class));
         verifyNoMoreInteractions();
     }
 
     @Test
     void whenGetJokesCountStatisticsThenReturnDtoWithStatistic() {
-        var mockedCategories = List.of(
-                Category.builder().id(1L).name("some-cat-1").build(),
-                Category.builder().id(2L).name("some-cat-2").build(),
-                Category.builder().id(3L).name("some-cat-3").build()
-        );
         Long count = 255L;
-        Mockito.when(jokeRepository.countJokeByCategoryName(ArgumentMatchers.anyString()))
-               .thenReturn(count);
-        Mockito.when(categoryRepository.findAll()).thenReturn(mockedCategories);
         var expected = List.of(
                 JokesGeneralStatistic.builder().name("some-cat-1").jokesCount(count).build(),
                 JokesGeneralStatistic.builder().name("some-cat-2").jokesCount(count).build(),
                 JokesGeneralStatistic.builder().name("some-cat-3").jokesCount(count).build()
         );
+        when(jokeQueryCustomRepository.countByCategories()).thenReturn(expected);
         var actual = jokeService.getJokesCountStatistics();
         assertThat(actual.getBody()).isNotNull();
         assertThat(actual.getBody()).hasSize(expected.size());
@@ -172,8 +176,7 @@ class JokeServiceImplTest {
         assertThat(actual.getBody())
                 .map(JokesGeneralStatistic::getName)
                 .contains(expected.get(2).getName());
-        Mockito.verify(categoryRepository, Mockito.times(1)).findAll();
-        Mockito.verify(jokeRepository, Mockito.times(3)).countJokeByCategoryName(ArgumentMatchers.anyString());
+        verify(jokeQueryCustomRepository, Mockito.times(1)).countByCategories();
         verifyNoMoreInteractions();
     }
 
@@ -188,9 +191,9 @@ class JokeServiceImplTest {
                 Joke.builder().name("some-joke").category(cat).build()
         );
         var mockedJokeDto = JokeDto.builder().joke("some-joke").category("some-cat").build();
-        Mockito.when(jokeQueryCustomRepository.findJokesByPredicate(ArgumentMatchers.any(Predicate.class)))
+        when(jokeQueryCustomRepository.findJokesByPredicate(ArgumentMatchers.any(Predicate.class)))
                .thenReturn(mockedList);
-        Mockito.when(jokeMapper.map(ArgumentMatchers.any(Joke.class)))
+        when(jokeMapper.map(ArgumentMatchers.any(Joke.class)))
                .thenReturn(mockedJokeDto);
         var actual = jokeService.getRandomJokeByCriteria(getCriteria());
         assertThat(actual.getBody()).isNotNull();
@@ -203,10 +206,10 @@ class JokeServiceImplTest {
                 .containsExactlyInAnyOrder(mockedList.stream()
                                                      .map(Joke::getName)
                                                      .toArray(String[]::new));
-        Mockito.verify(jokeQueryCustomRepository, Mockito.times(1))
+        verify(jokeQueryCustomRepository, Mockito.times(1))
                .findJokesByPredicate(ArgumentMatchers.any(Predicate.class));
-        Mockito.verify(jokeMapper, Mockito.times(3)).map(ArgumentMatchers.any(Joke.class));
-        Mockito.verify(commonBooleanBuilder, Mockito.times(2))
+        verify(jokeMapper, Mockito.times(3)).map(ArgumentMatchers.any(Joke.class));
+        verify(commonBooleanBuilder, Mockito.times(2))
                .andMatchStringFilter(ArgumentMatchers.any(),
                                      ArgumentMatchers.any(),
                                      ArgumentMatchers.any());
@@ -220,16 +223,16 @@ class JokeServiceImplTest {
         var mockedCategory = Category.builder().id(1L).name("some-cat").build();
         var mockedJoke = Joke.builder().name("some-joke").category(mockedCategory).build();
         var mockedJokeDto = JokeDto.builder().joke("some-joke").category("some-cat").build();
-        Mockito.when(jokeRepository.findOne(ArgumentMatchers.any(Predicate.class)))
+        when(jokeRepository.findOne(ArgumentMatchers.any(Predicate.class)))
                 .thenReturn(Optional.of(mockedJoke));
-        Mockito.when(jokeMapper.map(ArgumentMatchers.any(Joke.class)))
+        when(jokeMapper.map(ArgumentMatchers.any(Joke.class)))
                .thenReturn(mockedJokeDto);
         var actual = jokeService.getJokeById(1L);
         assertThat(actual.getBody()).isNotNull();
         assertThat(actual.getBody().getJoke()).isEqualTo(mockedJokeDto.getJoke());
         assertThat(actual.getBody().getCategory()).isEqualTo(mockedJokeDto.getCategory());
-        Mockito.verify(jokeRepository, Mockito.times(1)).findOne(ArgumentMatchers.any(Predicate.class));
-        Mockito.verify(jokeMapper, Mockito.times(1)).map(ArgumentMatchers.any(Joke.class));
+        verify(jokeRepository, Mockito.times(1)).findOne(ArgumentMatchers.any(Predicate.class));
+        verify(jokeMapper, Mockito.times(1)).map(ArgumentMatchers.any(Joke.class));
         verifyNoMoreInteractions();
     }
 
@@ -237,16 +240,25 @@ class JokeServiceImplTest {
     @DisplayName("Получение шутки из замоканной бд по идентификатору. "
             + "Ожидаемый результат - Выбрасывание BusinessException из-за не найденной шутки")
     void whenGetJokeByIdThenThrowBusinessException() {
-        Mockito.when(jokeRepository.findOne(ArgumentMatchers.any(Predicate.class)))
+        when(jokeRepository.findOne(ArgumentMatchers.any(Predicate.class)))
                 .thenReturn(Optional.empty());
-        Mockito.when(messageSourceHelper.getMessage(ArgumentMatchers.any(ErrorType.class), ArgumentMatchers.any()))
+        when(messageSourceHelper.getMessage(ArgumentMatchers.any(ErrorType.class), ArgumentMatchers.any()))
                .thenReturn(ErrorType.JOKE_NOT_FOUND_BY_ID.getMessage());
         assertThatThrownBy(() -> jokeService.getJokeById(1L))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining(ErrorType.JOKE_NOT_FOUND_BY_ID.getMessage());
-        Mockito.verify(jokeRepository, Mockito.times(1)).findOne(ArgumentMatchers.any(Predicate.class));
-        Mockito.verify(jokeMapper, Mockito.never()).map(ArgumentMatchers.any(Joke.class));
+        verify(jokeRepository, Mockito.times(1)).findOne(ArgumentMatchers.any(Predicate.class));
+        verify(jokeMapper, Mockito.never()).map(ArgumentMatchers.any(Joke.class));
         verifyNoMoreInteractions();
+    }
+
+    private void mockObjectMapper() throws JsonProcessingException {
+        JsonNode mockNode = Mockito.mock(JsonNode.class);
+        JsonNode innerMockNode = Mockito.mock(JsonNode.class);
+        when(objectMapper.readValue(ArgumentMatchers.anyString(), ArgumentMatchers.any(Class.class)))
+               .thenReturn(mockNode);
+        when(mockNode.get("value")).thenReturn(innerMockNode);
+        when(innerMockNode.asText()).thenReturn("some-joke");
     }
 
     private void verifyNoMoreInteractions() {

@@ -3,12 +3,11 @@ spring:
     url: jdbc:postgresql://localhost:5433/chuck
     username: postgres
     password: pass
-  liquibase:
-    url: jdbc:postgresql://localhost:5433/chuck
-    enabled: true
-    test:
-      database:
-        replace: none
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
   messages:
     basename: i18n/messages
 springdoc:
@@ -17,3 +16,5 @@ springdoc:
     path: /swagger-ui
     tagsSorter: alpha
     doc-expansion: none
+webclient:
+  url: https://api.chucknorris.io

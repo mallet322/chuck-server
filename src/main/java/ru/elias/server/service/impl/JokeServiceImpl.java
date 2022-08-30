@@ -3,14 +3,17 @@ package ru.elias.server.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.core.BooleanBuilder;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.elias.server.client.JokeClient;
+import ru.elias.server.client.JokeReactiveClient;
 import ru.elias.server.dto.JokeDto;
 import ru.elias.server.dto.JokesGeneralStatistic;
 import ru.elias.server.exception.BusinessException;
@@ -40,11 +43,13 @@ public class JokeServiceImpl implements JokeService {
 
     private final JokeMapper jokeMapper;
 
-    private final JokeClient jokeClient;
+    private final JokeReactiveClient jokeClient;
 
     private final MessageSourceHelper messageSourceHelper;
 
     private final CommonBooleanBuilder commonBooleanBuilder;
+
+    private final ObjectMapper objectMapper;
 
     @Override
     @Transactional
@@ -75,11 +80,7 @@ public class JokeServiceImpl implements JokeService {
     @Override
     @Transactional
     public ResponseEntity<List<JokesGeneralStatistic>> getJokesCountStatistics() {
-        return ResponseEntity.ok(categoryRepository.findAll()
-                                                   .stream()
-                                                   .map(this::getSummaryJokesOnCategories)
-                                                   .collect(Collectors.toList())
-        );
+        return ResponseEntity.ok(jokeQueryCustomRepository.countByCategories());
     }
 
     @Override
@@ -109,14 +110,32 @@ public class JokeServiceImpl implements JokeService {
 
     private void getAndSaveJoke(String categoryName) {
         var category = getCategory(categoryName);
-        var joke =
-                Joke.builder()
-                    .name(jokeClient.getRandomJokeByCategory(category.getName()))
-                    .category(category)
-                    .build();
+        var randomJoke = getJokeFromResponse(
+                jokeClient.getRandomJokeByCategory(category.getName())
+                          .blockOptional()
+                          .orElseThrow(() -> {
+                              var errorType = ErrorType.JOKE_NOT_FOUND_FROM_INTEGRATION;
+                              var msg = messageSourceHelper.getMessage(
+                                      errorType,
+                                      categoryName
+                              );
+                              log.error(msg);
+                              throw new BusinessException(errorType, msg);
+                          })
+        );
+        var joke = Joke.builder()
+                       .name(randomJoke)
+                       .category(category)
+                       .build();
         if (!jokeRepository.exists(QEntities.JOKE.name.eq(joke.getName()))) {
             jokeRepository.save(joke);
         }
+    }
+
+    @SneakyThrows
+    private String getJokeFromResponse(String response) {
+        var node = objectMapper.readValue(response, JsonNode.class);
+        return node.get("value").asText();
     }
 
     private Category getCategory(String categoryName) {
@@ -130,13 +149,6 @@ public class JokeServiceImpl implements JokeService {
                                      log.error(msg);
                                      throw new BusinessException(errorType, msg);
                                  });
-    }
-
-    private JokesGeneralStatistic getSummaryJokesOnCategories(Category category) {
-        return new JokesGeneralStatistic(
-                category.getName(),
-                jokeRepository.countJokeByCategoryName(category.getName())
-        );
     }
 
     private BooleanBuilder getBooleanBuilder(JokeQueryCriteria criteria) {

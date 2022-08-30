@@ -21,4 +21,6 @@ public class ApiPathConstants {
 
     public static final String QUERY = "/query";
 
+    public static final String RANDOM_JOKE = "/random";
+
 }

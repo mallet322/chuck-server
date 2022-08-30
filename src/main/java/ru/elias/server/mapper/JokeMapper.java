@@ -1,5 +1,6 @@
 package ru.elias.server.mapper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -21,6 +22,9 @@ public abstract class JokeMapper {
 
     @Autowired
     private MessageSourceHelper messageSourceHelper;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Mapping(source = "dto.joke", target = "name")
     @Mapping(source = "dto.category", target = "category", qualifiedByName = "mapCategory")

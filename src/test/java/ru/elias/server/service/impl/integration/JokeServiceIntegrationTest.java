@@ -7,9 +7,14 @@ import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import reactor.core.publisher.Mono;
 import ru.elias.server.AbstractDbRiderTest;
+import ru.elias.server.client.impl.JokeReactiveClientImpl;
 import ru.elias.server.dto.JokeDto;
 import ru.elias.server.dto.JokesGeneralStatistic;
 import ru.elias.server.exception.BusinessException;
@@ -17,10 +22,12 @@ import ru.elias.server.filter.JokeQueryCriteria;
 import ru.elias.server.filter.base.StringFilter;
 import ru.elias.server.model.Category;
 import ru.elias.server.repository.CategoryRepository;
-import ru.elias.server.repository.JokeRepository;
 import ru.elias.server.service.impl.JokeServiceImpl;
 
 class JokeServiceIntegrationTest extends AbstractDbRiderTest {
+
+    @MockBean
+    private JokeReactiveClientImpl jokeReactiveClient;
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -33,6 +40,12 @@ class JokeServiceIntegrationTest extends AbstractDbRiderTest {
     @ExpectedDataSet(value = "data/yml/createJokeWithAutoModeIntegrationTestExpected.yml",
                      ignoreCols = {"name", "created_at"})
     void whenCreateJokeWithAutoMode() {
+        var mockedJokeResponse = "{"
+                .concat("\"value\": ")
+                .concat("\"joke\"")
+                .concat("}");
+        when(jokeReactiveClient.getRandomJokeByCategory(ArgumentMatchers.anyString()))
+               .thenReturn(Mono.just(mockedJokeResponse));
         var result = jokeService.createJoke(true, "sport", null);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
@@ -40,7 +53,6 @@ class JokeServiceIntegrationTest extends AbstractDbRiderTest {
     @Test
     @DataSet(value = "data/yml/ethalonData.yml")
     void whenCreateJokeWithAutoModeThenNotCreateJokeAndThrowBusinessExeption() {
-        categoryRepository.saveAll(dataFactory.categories());
         assertThatThrownBy(() -> jokeService.createJoke(true, "some-category", null))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("Категория с названием some-category не найдена!");

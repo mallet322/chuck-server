@@ -12,7 +12,9 @@ public enum ErrorType {
 
     CATEGORY_NOT_FOUND_BY_NAME("C001", "Category not found by name!"),
 
-    JOKE_NOT_FOUND_BY_ID("J001", "Joke not found by id!");
+    JOKE_NOT_FOUND_BY_ID("J001", "Joke not found by id!"),
+
+    JOKE_NOT_FOUND_FROM_INTEGRATION("J002", "Joke not found from integration");
 
     private final String code;
 

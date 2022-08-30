@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -44,14 +44,14 @@ class CategoryRestControllerTest extends BaseControllerTest {
 
     @Test
     void whenGetCategoryByNameThenReturn200() throws Exception {
-        Mockito.when(categoryService.getCategoryByName(ArgumentMatchers.anyString()))
+        when(categoryService.getCategoryByName(ArgumentMatchers.anyString()))
                 .thenReturn(ResponseEntity.ok(CategoryDto.builder().name("some-category").build()));
         performOkRequest(BASE_PATH + "/some-category");
     }
 
     @Test
     void whenGetCategoryByNameThenReturn404WithCategoryNotFoundException() throws Exception {
-        Mockito.when(categoryService.getCategoryByName(ArgumentMatchers.anyString()))
+        when(categoryService.getCategoryByName(ArgumentMatchers.anyString()))
                 .thenThrow(new BusinessException(ErrorType.CATEGORY_NOT_FOUND_BY_NAME));
         performNotFoundRequest(HttpMethod.GET,
                                BASE_PATH + "/some-category",
@@ -61,14 +61,14 @@ class CategoryRestControllerTest extends BaseControllerTest {
 
     @Test
     void whenGetAllCategoriesThenReturn200() throws Exception {
-        Mockito.when(categoryService.getAllCategories())
+        when(categoryService.getAllCategories())
                .thenReturn(ResponseEntity.ok(List.of(CategoryDto.builder().name("some-category").build())));
         performOkRequest(BASE_PATH);
     }
 
     @Test
     void whenCreateCategoryWithAutoModeThenReturn201() throws Exception {
-        Mockito.when(categoryService.createCategories(ArgumentMatchers.anyBoolean(),
+        when(categoryService.createCategories(ArgumentMatchers.anyBoolean(),
                                                       ArgumentMatchers.any()))
                .thenReturn(ResponseEntity.status(HttpStatus.CREATED).build());
         performCreatedRequest(BASE_PATH, "?auto=true", null);
@@ -76,7 +76,7 @@ class CategoryRestControllerTest extends BaseControllerTest {
 
     @Test
     void whenCreateCategoryWithManualModeThenReturn201() throws Exception {
-        Mockito.when(categoryService.createCategories(ArgumentMatchers.anyBoolean(),
+        when(categoryService.createCategories(ArgumentMatchers.anyBoolean(),
                                                       ArgumentMatchers.any()))
                .thenReturn(ResponseEntity.status(HttpStatus.CREATED).build());
         performCreatedRequest(BASE_PATH, "?auto=false", CategoryDto.builder()

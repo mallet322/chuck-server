@@ -10,4 +10,7 @@ public abstract class AbstractSpringTest {
     @Autowired
     protected TestDataFactory dataFactory;
 
+    @Autowired
+    protected ObjectMapper objectMapper;
+
 }

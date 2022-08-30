@@ -30,7 +30,7 @@ public class ErrorHandlerControllerAdvice {
     public ResponseEntity<Map<String, Object>> handleNotFoundException(BusinessException e) {
         var errorType = e.getErrorType();
         return switch (errorType) {
-            case CATEGORY_NOT_FOUND_BY_NAME, JOKE_NOT_FOUND_BY_ID ->
+            case CATEGORY_NOT_FOUND_BY_NAME, JOKE_NOT_FOUND_BY_ID, JOKE_NOT_FOUND_FROM_INTEGRATION ->
                     ResponseEntity.status(HttpStatus.NOT_FOUND)
                                   .body(customErrorAttributes.getErrorAttributes(e, HttpStatus.NOT_FOUND));
             default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

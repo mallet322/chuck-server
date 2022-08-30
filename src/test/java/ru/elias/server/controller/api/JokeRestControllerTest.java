@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -47,7 +48,7 @@ class JokeRestControllerTest extends BaseControllerTest {
 
     @Test
     void whenGetJokeByIdThenReturn200() throws Exception {
-        Mockito.when(jokeService.getJokeById(Mockito.anyLong()))
+        when(jokeService.getJokeById(Mockito.anyLong()))
                .thenReturn(ResponseEntity.ok(JokeDto.builder()
                                                     .joke("joke")
                                                     .category("cat")
@@ -58,14 +59,14 @@ class JokeRestControllerTest extends BaseControllerTest {
 
     @Test
     void whenGetJokeByIdThenReturn404WithJokeNotFoundException() throws Exception {
-        Mockito.when(jokeService.getJokeById(ArgumentMatchers.anyLong()))
+        when(jokeService.getJokeById(ArgumentMatchers.anyLong()))
                .thenThrow(new BusinessException(ErrorType.JOKE_NOT_FOUND_BY_ID));
         performNotFoundRequest(HttpMethod.GET, BASE_PATH + "/1", null, ErrorType.JOKE_NOT_FOUND_BY_ID);
     }
 
     @Test
     void whenGetRandomJokeThenReturn200() throws Exception {
-        Mockito.when(jokeService.getRandomJoke())
+        when(jokeService.getRandomJoke())
                .thenReturn(ResponseEntity.ok(JokeDto.builder()
                                                     .joke("joke")
                                                     .category("cat")
@@ -76,7 +77,7 @@ class JokeRestControllerTest extends BaseControllerTest {
 
     @Test
     void getRandomJokeByCategory() throws Exception {
-        Mockito.when(jokeService.getRandomJokeByCategory(ArgumentMatchers.anyString()))
+        when(jokeService.getRandomJokeByCategory(ArgumentMatchers.anyString()))
                .thenReturn(ResponseEntity.ok(JokeDto.builder()
                                                     .joke("joke")
                                                     .category("cat")
@@ -87,7 +88,7 @@ class JokeRestControllerTest extends BaseControllerTest {
 
     @Test
     void whenCreateJokeWithAutoModeThenReturn201() throws Exception {
-        Mockito.when(jokeService.createJoke(ArgumentMatchers.anyBoolean(),
+        when(jokeService.createJoke(ArgumentMatchers.anyBoolean(),
                                             ArgumentMatchers.anyString(),
                                             ArgumentMatchers.any()))
                .thenReturn(ResponseEntity.status(HttpStatus.CREATED).build());
@@ -96,7 +97,7 @@ class JokeRestControllerTest extends BaseControllerTest {
 
     @Test
     void whenCreateJokeWithManualModeThenReturn201() throws Exception {
-        Mockito.when(jokeService.createJoke(ArgumentMatchers.anyBoolean(),
+        when(jokeService.createJoke(ArgumentMatchers.anyBoolean(),
                                             ArgumentMatchers.anyString(),
                                             ArgumentMatchers.any()))
                .thenReturn(ResponseEntity.status(HttpStatus.CREATED).build());
@@ -110,7 +111,7 @@ class JokeRestControllerTest extends BaseControllerTest {
 
     @Test
     void getJokesCountStatistics() throws Exception {
-        Mockito.when(jokeService.getJokesCountStatistics())
+        when(jokeService.getJokesCountStatistics())
                .thenReturn(ResponseEntity.ok(List.of(JokesGeneralStatistic.builder()
                                                                           .name("cat")
                                                                           .jokesCount(123L)
@@ -122,7 +123,7 @@ class JokeRestControllerTest extends BaseControllerTest {
     @Test
     void getJokesByCriteria() throws Exception {
         var criteria = getCriteria();
-        Mockito.when(jokeService.getRandomJokeByCriteria(criteria))
+        when(jokeService.getRandomJokeByCriteria(criteria))
                .thenReturn(ResponseEntity.ok(List.of(JokeDto.builder()
                                                             .joke("joke")
                                                             .category("cat")

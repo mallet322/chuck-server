@@ -1,13 +1,19 @@
 package ru.elias.server.service.impl.integration;
 
+import java.util.List;
+
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import reactor.core.publisher.Mono;
 import ru.elias.server.AbstractDbRiderTest;
+import ru.elias.server.client.impl.JokeReactiveClientImpl;
 import ru.elias.server.dto.CategoryDto;
 import ru.elias.server.exception.BusinessException;
 import ru.elias.server.model.Category;
@@ -15,6 +21,9 @@ import ru.elias.server.repository.CategoryRepository;
 import ru.elias.server.service.impl.CategoryServiceImpl;
 
 class CategoryServiceIntegrationTest extends AbstractDbRiderTest {
+
+    @MockBean
+    private JokeReactiveClientImpl jokeReactiveClient;
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -68,6 +77,11 @@ class CategoryServiceIntegrationTest extends AbstractDbRiderTest {
     @ExpectedDataSet(value = "data/yml/createCategoryWithAutoModeIntegrationTestExpected.yml",
                      ignoreCols = "created_at")
     void whenCreateCategoryOnAutoMode() {
+        when(jokeReactiveClient.getAllCategories())
+               .thenReturn(Mono.just(List.of("animal", "career", "celebrity", "dev",
+                                           "explicit", "fashion", "food", "history",
+                                           "money", "movie", "music", "political",
+                                           "religion", "science", "sport", "travel")));
         var actual = categoryService.createCategories(true, null);
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
