@@ -25,7 +25,6 @@ import ru.elias.server.filter.JokeQueryCriteria;
 import ru.elias.server.filter.base.StringFilter;
 import ru.elias.server.service.JokeService;
 
-@DisplayName("Тестирование REST API для работы с шутками")
 @AutoConfigureMockMvc
 @WebMvcTest(JokeRestController.class)
 class JokeRestControllerTest extends BaseControllerTest {

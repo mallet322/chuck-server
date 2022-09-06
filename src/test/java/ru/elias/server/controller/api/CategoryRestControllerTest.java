@@ -15,13 +15,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.elias.server.dto.CategoryDto;
 import ru.elias.server.exception.BusinessException;
 import ru.elias.server.exception.ErrorType;
 import ru.elias.server.service.CategoryService;
 
-@DisplayName("Тестирование REST API для работы с категориями")
 @AutoConfigureMockMvc
 @WebMvcTest(CategoryRestController.class)
 class CategoryRestControllerTest extends BaseControllerTest {
@@ -53,32 +53,35 @@ class CategoryRestControllerTest extends BaseControllerTest {
     void whenGetCategoryByNameThenReturn404WithCategoryNotFoundException() throws Exception {
         when(categoryService.getCategoryByName(ArgumentMatchers.anyString()))
                 .thenThrow(new BusinessException(ErrorType.CATEGORY_NOT_FOUND_BY_NAME));
-        performNotFoundRequest(HttpMethod.GET,
-                               BASE_PATH + "/some-category",
-                               null,
-                               ErrorType.CATEGORY_NOT_FOUND_BY_NAME);
+        performNotFoundRequest(
+                HttpMethod.GET,
+                BASE_PATH + "/some-category",
+                null,
+                ErrorType.CATEGORY_NOT_FOUND_BY_NAME);
     }
 
     @Test
     void whenGetAllCategoriesThenReturn200() throws Exception {
         when(categoryService.getAllCategories())
-               .thenReturn(ResponseEntity.ok(List.of(CategoryDto.builder().name("some-category").build())));
+                .thenReturn(ResponseEntity.ok(List.of(CategoryDto.builder().name("some-category").build())));
         performOkRequest(BASE_PATH);
     }
 
     @Test
     void whenCreateCategoryWithAutoModeThenReturn201() throws Exception {
-        when(categoryService.createCategories(ArgumentMatchers.anyBoolean(),
-                                                      ArgumentMatchers.any()))
-               .thenReturn(ResponseEntity.status(HttpStatus.CREATED).build());
+        when(categoryService.createCategories(
+                ArgumentMatchers.anyBoolean(),
+                ArgumentMatchers.any()))
+                .thenReturn(ResponseEntity.status(HttpStatus.CREATED).build());
         performCreatedRequest(BASE_PATH, "?auto=true", null);
     }
 
     @Test
     void whenCreateCategoryWithManualModeThenReturn201() throws Exception {
-        when(categoryService.createCategories(ArgumentMatchers.anyBoolean(),
-                                                      ArgumentMatchers.any()))
-               .thenReturn(ResponseEntity.status(HttpStatus.CREATED).build());
+        when(categoryService.createCategories(
+                ArgumentMatchers.anyBoolean(),
+                ArgumentMatchers.any()))
+                .thenReturn(ResponseEntity.status(HttpStatus.CREATED).build());
         performCreatedRequest(BASE_PATH, "?auto=false", CategoryDto.builder()
                                                                    .name("some-category")
                                                                    .build());

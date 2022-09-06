@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  db:
+    container_name: db
+    image: 'postgres:latest'
+    volumes:
+      - ./db/shortcut/data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=pass
+      - POSTGRESS_DB=chuck
+      - PGDATA=/var/lib/postgresql/data
+
+  app:
+    container_name: chuck-server
+    image: chuck-server
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/chuck
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=pass
+    ports:
+      - "9090:8080"
+    depends_on:
+      - db

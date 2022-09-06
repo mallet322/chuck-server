@@ -5,6 +5,8 @@ import org.hamcrest.CoreMatchers;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -12,6 +14,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.elias.server.exception.BusinessException;
 import ru.elias.server.exception.ErrorType;
+import ru.elias.server.model.Role;
 
 public abstract class BaseControllerTest {
 
@@ -123,13 +126,25 @@ public abstract class BaseControllerTest {
      * @return {@link MockHttpServletRequestBuilder}
      */
     private MockHttpServletRequestBuilder identifyMockRequestBuilder(HttpMethod httpMethod, String requestUrl) {
-        return switch (httpMethod) {
-            case GET -> MockMvcRequestBuilders.get(requestUrl);
-            case POST -> MockMvcRequestBuilders.post(requestUrl);
-            case DELETE -> MockMvcRequestBuilders.delete(requestUrl);
-            case PUT -> MockMvcRequestBuilders.put(requestUrl);
-            case PATCH -> MockMvcRequestBuilders.patch(requestUrl);
-            default -> throw new RuntimeException("Unspecified HTTP method");
-        };
+        switch (httpMethod) {
+            case GET:
+                return MockMvcRequestBuilders.get(requestUrl)
+                                             .with(user("test@gmail.com").authorities(Role.ADMIN));
+            case POST:
+                return MockMvcRequestBuilders.post(requestUrl)
+                                             .with(user("test@gmail.com").authorities(Role.ADMIN))
+                                             .with(csrf());
+            case DELETE:
+                return MockMvcRequestBuilders.delete(requestUrl)
+                                             .with(user("test@gmail.com").authorities(Role.ADMIN));
+            case PUT:
+                return MockMvcRequestBuilders.put(requestUrl)
+                                             .with(user("test@gmail.com").authorities(Role.ADMIN));
+            case PATCH:
+                return MockMvcRequestBuilders.patch(requestUrl)
+                                             .with(user("test@gmail.com").authorities(Role.ADMIN));
+            default:
+                throw new RuntimeException("Unspecified HTTP method");
+        }
     }
 }

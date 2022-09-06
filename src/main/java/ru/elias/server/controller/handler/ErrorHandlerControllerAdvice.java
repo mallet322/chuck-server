@@ -29,14 +29,18 @@ public class ErrorHandlerControllerAdvice {
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<Map<String, Object>> handleNotFoundException(BusinessException e) {
         var errorType = e.getErrorType();
-        return switch (errorType) {
-            case CATEGORY_NOT_FOUND_BY_NAME, JOKE_NOT_FOUND_BY_ID, JOKE_NOT_FOUND_FROM_INTEGRATION ->
-                    ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                  .body(customErrorAttributes.getErrorAttributes(e, HttpStatus.NOT_FOUND));
-            default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                     .body(customErrorAttributes.getErrorAttributes(e,
-                                                                                    HttpStatus.INTERNAL_SERVER_ERROR));
-        };
+        switch (errorType) {
+            case CATEGORY_NOT_FOUND_BY_NAME:
+            case JOKE_NOT_FOUND_BY_ID:
+            case JOKE_NOT_FOUND_FROM_INTEGRATION:
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                     .body(customErrorAttributes.getErrorAttributes(e, HttpStatus.NOT_FOUND));
+            default:
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                     .body(customErrorAttributes.getErrorAttributes(
+                                             e,
+                                             HttpStatus.INTERNAL_SERVER_ERROR));
+        }
     }
 
     @ExceptionHandler(BindException.class)
