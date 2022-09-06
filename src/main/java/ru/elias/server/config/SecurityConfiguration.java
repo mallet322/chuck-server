@@ -10,21 +10,26 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private static final String[] AUTH_WHITElIST =
-            new String[] {"/login", "/registration", "/v3/api-doc/**", "/swagger-ui/**"};
+    private static final String[] AUTH_WHITELIST =
+            new String[] {
+                    "/login",
+                    "/registration",
+                    "/v3/api-doc/**",
+                    "/swagger-ui/**"
+            };
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
                 .authorizeHttpRequests(urlConfig -> urlConfig
-                        .antMatchers(AUTH_WHITElIST).permitAll()
+                        .antMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(loginConfig -> loginConfig
-                        .loginPage(AUTH_WHITElIST[0]))
+                        .loginPage(AUTH_WHITELIST[0]))
                 .oauth2Login(oauth2Config -> oauth2Config
-                        .loginPage(AUTH_WHITElIST[0]));
+                        .loginPage(AUTH_WHITELIST[0]));
     }
 
     @Bean

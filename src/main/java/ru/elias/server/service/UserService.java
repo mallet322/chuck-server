@@ -1,7 +1,6 @@
 package ru.elias.server.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,10 +26,9 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var currentUser = userRepository.findByUsername(username)
-                                        .map(userMapper::map)
-                                        .orElseThrow(() -> new UsernameNotFoundException("Failed to retrieved user: " + username));
-        return currentUser;
+        return userRepository.findByUsername(username)
+                             .map(userMapper::map)
+                             .orElseThrow(() -> new UsernameNotFoundException("Failed to retrieved user: " + username));
     }
 
 }

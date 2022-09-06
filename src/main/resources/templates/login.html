@@ -17,11 +17,9 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
-
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <title>Login page</title>
-
 </head>
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <body>
 <div class="container pt-3">
     <div class="row">
@@ -42,7 +40,6 @@
                 Authorization
             </div>
             <div class="card-body">
-
                 <form action="/login" method="post">
                     <div class="container">
                         <div class="row">
@@ -67,9 +64,9 @@
                                name="password"
                                placeholder="Enter your password">
                     </div>
-                    <button type="submit" class="btn btn-primary align-items-center">Login</button>
+                    <button type="submit" class="btn btn-primary">Login</button>
                     <a href="http://localhost:8080/oauth2/authorization/google"
-                       class="btn btn-primary align-items-center">
+                       class="btn btn-primary">
                         Login with Google
                     </a>
                 </form>
