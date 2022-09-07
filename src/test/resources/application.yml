@@ -12,5 +12,13 @@ spring:
     basename: i18n/messages
   liquibase:
     enabled: false
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 419340148161-n9f973smr4n986lnj2kphq60qh7ggf6t.apps.googleusercontent.com
+            clientSecret: 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
+            redirectUri: http://localhost:8080/login/oauth2/code/google
 webclient:
   url: https://api.chucknorris.io
