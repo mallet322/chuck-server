@@ -4,8 +4,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import static ru.elias.server.model.Role.ADMIN;
 
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -24,6 +26,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeHttpRequests(urlConfig -> urlConfig
                         .antMatchers(AUTH_WHITELIST).permitAll()
+                        .antMatchers("/api/v1/users/**").hasAuthority(ADMIN.getAuthority())
                         .anyRequest().authenticated()
                 )
                 .formLogin(loginConfig -> loginConfig

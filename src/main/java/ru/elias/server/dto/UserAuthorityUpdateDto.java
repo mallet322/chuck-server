@@ -1,6 +1,6 @@
 package ru.elias.server.dto;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,13 +14,10 @@ import ru.elias.server.model.Role;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
+public class UserAuthorityUpdateDto {
 
-    @NotBlank
-    private String username;
-
-    @NotBlank
-    private String rawPassword;
+    @NotNull
+    private Long id;
 
     private Role authority;
 

@@ -21,7 +21,7 @@ import ru.elias.server.filter.JokeQueryCriteria;
 import ru.elias.server.service.JokeService;
 import ru.elias.server.util.ApiPathConstants;
 
-@Tag(name = "Шутки")
+@Tag(name = "Jokes")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(ApiPathConstants.API_V_1 + ApiPathConstants.JOKES)
@@ -29,46 +29,46 @@ public class JokeRestController {
 
     private final JokeService jokeService;
 
-    @Operation(summary = "Получение шутки по идентификатору")
+    @Operation(summary = "Get joke by id")
     @GetMapping(ApiPathConstants.BY_ID)
     public ResponseEntity<JokeDto> getJokeById(
-            @PathVariable("id") @Parameter(description = "ID шутки") Long id) {
+            @PathVariable("id") @Parameter(description = "Joke id") Long id) {
         return jokeService.getJokeById(id);
     }
 
-    @Operation(summary = "Получение случайной шутки")
+    @Operation(summary = "Get random joke")
     @GetMapping(ApiPathConstants.RANDOM)
     public ResponseEntity<JokeDto> getRandomJoke() {
         return jokeService.getRandomJoke();
     }
 
-    @Operation(summary = "Получение случайной шутки по наименовании категории")
+    @Operation(summary = "Get joke by category")
     @GetMapping(ApiPathConstants.RANDOM + ApiPathConstants.BY_CATEGORY_NAME)
     public ResponseEntity<JokeDto> getRandomJokeByCategory(
             @PathVariable("categoryName")
-            @Parameter(description = "Наименование категории")
+            @Parameter(description = "Category name")
             String categoryName) {
         return jokeService.getRandomJokeByCategory(categoryName);
     }
 
-    @Operation(summary = "Создание шутки")
+    @Operation(summary = "Create joke")
     @PostMapping
     public ResponseEntity<Void> create(
-            @Parameter(description = "Режим создания шутки (авто/ручное)")
+            @Parameter(description = "Creating mode (auto/manual)")
             @RequestParam(value = "auto") boolean flag,
-            @Parameter(description = "Наименование категории (режим авто)")
+            @Parameter(description = "Category name (auto mode)")
             @RequestParam(value = "category", required = false) String category,
             @RequestBody(required = false) JokeDto request) {
         return jokeService.createJoke(flag, category, request);
     }
 
-    @Operation(summary = "Получение общего количества шуток для каждой категории")
+    @Operation(summary = "Get joke's count on categories")
     @GetMapping(ApiPathConstants.STATISTICS)
     public ResponseEntity<List<JokesGeneralStatistic>> getJokesCountStatistics() {
         return jokeService.getJokesCountStatistics();
     }
 
-    @Operation(summary = "Получение списка шуток по критерию")
+    @Operation(summary = "Get joke by criteria")
     @GetMapping(ApiPathConstants.QUERY)
     public ResponseEntity<List<JokeDto>> getJokesByCriteria(@ParameterObject JokeQueryCriteria criteria) {
         return jokeService.getRandomJokeByCriteria(criteria);

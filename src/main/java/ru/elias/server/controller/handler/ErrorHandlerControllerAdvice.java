@@ -33,6 +33,8 @@ public class ErrorHandlerControllerAdvice {
             case CATEGORY_NOT_FOUND_BY_NAME:
             case JOKE_NOT_FOUND_BY_ID:
             case JOKE_NOT_FOUND_FROM_INTEGRATION:
+            case USER_NOT_FOUND_BY_ID:
+            case USER_NOT_FOUND_BY_NAME:
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                      .body(customErrorAttributes.getErrorAttributes(e, HttpStatus.NOT_FOUND));
             default:

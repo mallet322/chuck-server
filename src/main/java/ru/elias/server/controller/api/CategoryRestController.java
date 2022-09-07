@@ -20,7 +20,7 @@ import ru.elias.server.dto.CategoryDto;
 import ru.elias.server.service.CategoryService;
 import ru.elias.server.util.ApiPathConstants;
 
-@Tag(name = "Категории")
+@Tag(name = "Categories")
 @RestController
 @RequestMapping(ApiPathConstants.API_V_1 + ApiPathConstants.CATEGORIES)
 @RequiredArgsConstructor
@@ -28,24 +28,24 @@ public class CategoryRestController {
 
     private final CategoryService categoryService;
 
-    @Operation(summary = "Получение категории по наименованию")
+    @Operation(summary = "Get category by name")
     @GetMapping("{categoryName}")
     public ResponseEntity<CategoryDto> getCategoryByName(
-            @Parameter(description = "Наименование категории")
+            @Parameter(description = "Category name")
             @PathVariable("categoryName") String name) {
         return categoryService.getCategoryByName(name);
     }
 
-    @Operation(summary = "Получение всех категорий")
+    @Operation(summary = "Get all categories")
     @GetMapping
     public ResponseEntity<List<CategoryDto>> getAllCategories() {
         return categoryService.getAllCategories();
     }
 
-    @Operation(summary = "Создание категории")
+    @Operation(summary = "Create category")
     @PostMapping
     public ResponseEntity<Void> create(
-            @Parameter(description = "Режим создания категории (авто/ручное)")
+            @Parameter(description = "Creating mode (auto/manual)")
             @RequestParam(value = "auto") boolean flag,
             @Valid
             @RequestBody(required = false) CategoryDto request) {

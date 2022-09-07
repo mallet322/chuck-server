@@ -8,7 +8,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import ru.elias.server.dto.UserDto;
+import ru.elias.server.dto.UserAuthorityUpdateDto;
+import ru.elias.server.dto.UserCreateDto;
 import ru.elias.server.model.Role;
 
 @Component
@@ -17,7 +18,7 @@ public class UserMapper {
 
     private final PasswordEncoder passwordEncoder;
 
-    public ru.elias.server.model.User map(UserDto dto) {
+    public ru.elias.server.model.User map(UserCreateDto dto) {
         var user = new ru.elias.server.model.User()
                 .setUsername(dto.getUsername())
                 .setPassword(dto.getRawPassword())
@@ -33,6 +34,10 @@ public class UserMapper {
         return new User(user.getUsername(),
                         user.getPassword(),
                         Collections.singleton(user.getRole()));
+    }
+
+    public void updateRole(ru.elias.server.model.User entity, UserAuthorityUpdateDto dto) {
+        entity.setRole(dto.getAuthority());
     }
 
 }
