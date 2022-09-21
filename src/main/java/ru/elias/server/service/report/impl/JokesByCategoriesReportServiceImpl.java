@@ -68,9 +68,4 @@ public class JokesByCategoriesReportServiceImpl extends BaseReportService<String
                                       .data(jokes).build();
     }
 
-    protected String getCurrentUser() {
-        var principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return principal.getUsername();
-    }
-
 }

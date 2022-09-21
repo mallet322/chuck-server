@@ -23,6 +23,8 @@ import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import ru.elias.server.dto.report.ReportFormat;
 import ru.elias.server.exception.BusinessException;
 import ru.elias.server.exception.ErrorType;
@@ -145,6 +147,11 @@ public abstract class BaseReportService<P, R> {
         var reportTemplateFile =
                 context.getResource(fileName).getInputStream();
         return JasperCompileManager.compileReport(reportTemplateFile);
+    }
+
+    protected String getCurrentUser() {
+        var principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return principal.getUsername();
     }
 
 }
