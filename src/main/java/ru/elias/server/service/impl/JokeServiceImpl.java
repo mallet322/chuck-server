@@ -1,6 +1,7 @@
 package ru.elias.server.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,10 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.elias.server.client.JokeReactiveClient;
 import ru.elias.server.dto.JokeDto;
 import ru.elias.server.dto.JokesGeneralStatistic;
+import ru.elias.server.dto.report.JokesByCategoriesReportData;
 import ru.elias.server.exception.BusinessException;
 import ru.elias.server.exception.ErrorType;
 import ru.elias.server.filter.JokeQueryCriteria;
 import ru.elias.server.filter.common.CommonBooleanBuilder;
+import ru.elias.server.mapper.JokeCategoryReportMapper;
 import ru.elias.server.mapper.JokeMapper;
 import ru.elias.server.model.Category;
 import ru.elias.server.model.Joke;
@@ -42,6 +45,8 @@ public class JokeServiceImpl implements JokeService {
     private final CategoryRepository categoryRepository;
 
     private final JokeMapper jokeMapper;
+
+    private final JokeCategoryReportMapper jokeCategoryReportMapper;
 
     private final JokeReactiveClient jokeClient;
 
@@ -90,6 +95,14 @@ public class JokeServiceImpl implements JokeService {
                                                           .stream()
                                                           .map(jokeMapper::map)
                                                           .collect(Collectors.toList()));
+    }
+
+    @Override
+    public Optional<List<JokesByCategoriesReportData>> getAllJokesByCategory(String categoryName) {
+        return Optional.of(jokeRepository.findAllByCategory(categoryName)
+                                         .stream()
+                                         .map(jokeCategoryReportMapper::map)
+                                         .collect(Collectors.toList()));
     }
 
     @Override

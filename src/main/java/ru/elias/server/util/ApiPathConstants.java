@@ -25,4 +25,8 @@ public class ApiPathConstants {
 
     public static final String RANDOM_JOKE = "/random";
 
+    public static final String REPORT = "/reports";
+
+    public static final String JOKE_BY_CATEGORY_REPORT = "/jokes-by-categories";
+
 }

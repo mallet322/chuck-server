@@ -1,5 +1,7 @@
 package ru.elias.server.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
@@ -14,6 +16,12 @@ public interface JokeRepository extends CrudRepository<Joke, Long>, QuerydslPred
                    + "order by random() "
                    + "limit 1")
     Joke findRandomJoke();
+
+    @Query("select j "
+            + "from Category c "
+            + "join c.jokes j "
+            + "where c.name = :categoryName")
+    List<Joke> findAllByCategory(@Param("categoryName") String categoryName);
 
     @Query(nativeQuery = true,
            value = "select j.* "
