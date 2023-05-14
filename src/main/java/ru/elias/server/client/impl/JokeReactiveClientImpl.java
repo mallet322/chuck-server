@@ -21,6 +21,7 @@ public class JokeReactiveClientImpl implements JokeReactiveClient {
 
     private final WebClient jokeWebClient;
 
+    @Timed("getRandomJokeIntegrationGauge")
     @Override
     public Mono<String> getRandomJoke() {
         return jokeWebClient.get()
@@ -31,7 +32,7 @@ public class JokeReactiveClientImpl implements JokeReactiveClient {
                             .doOnError(error -> log.error(error.getMessage(), error));
     }
 
-    @Timed
+    @Timed("getRandomJokeByCategoryIntegrationGauge")
     @Override
     public Mono<String> getRandomJokeByCategory(String category) {
         return jokeWebClient.get()
@@ -44,7 +45,7 @@ public class JokeReactiveClientImpl implements JokeReactiveClient {
                             .doOnError(error -> log.error(error.getMessage(), error));
     }
 
-    @Timed
+    @Timed("getAllCategoriesIntegrationGauge")
     @Override
     public Mono<List<String>> getAllCategories() {
         return jokeWebClient.get()

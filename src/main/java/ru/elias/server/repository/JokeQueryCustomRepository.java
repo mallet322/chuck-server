@@ -9,10 +9,10 @@ import ru.elias.server.model.Joke;
 
 public interface JokeQueryCustomRepository {
 
-    @Timed("gettingJokesByPredicateMetric")
+    @Timed("gettingJokesByPredicateDataLayerGauge")
     List<Joke> findJokesByPredicate(Predicate predicate);
 
-    @Timed(("gettingCountByCategoriesMetric"))
+    @Timed("gettingCountByCategoriesDataLayerGauge")
     List<JokesGeneralStatistic> countByCategories();
 
 }

@@ -38,6 +38,7 @@ public class JokeQueryCustomRepositoryImpl implements JokeQueryCustomRepository 
                 .fetch();
     }
 
+    @Override
     public List<JokesGeneralStatistic> countByCategories() {
         return queryFactory
                 .from(CATEGORIES)

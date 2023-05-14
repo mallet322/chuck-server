@@ -19,7 +19,9 @@ spring:
 #            clientSecret: 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
 #            redirectUri: http://localhost:8080/login/oauth2/code/google
 management:
-  endpoints.web.exposure.include: 'prometheus, health'
+  endpoints:
+   web:
+    exposure.include: metrics, health, prometheus
   metrics:
     export:
       prometheus:
@@ -39,5 +41,3 @@ springdoc:
 
 webclient:
   url: https://api.chucknorris.io
-#  trustStoreLocation:
-#  trustStorePassword: changeit
