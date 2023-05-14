@@ -13,4 +13,8 @@ public class WebClientProperties {
 
     private String url;
 
+    private String trustStoreLocation;
+
+    private String trustStorePassword;
+
 }

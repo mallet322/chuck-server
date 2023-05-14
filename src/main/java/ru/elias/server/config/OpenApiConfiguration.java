@@ -18,31 +18,31 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ru.elias.server.util.OpenApiConstants;
 
-@SecuritySchemes(
-        value = {
-                @SecurityScheme(
-                        name = OpenApiConstants.OAUTH2,
-                        description = OpenApiConstants.OAUTH2_DESCRIPTION,
-                        type = SecuritySchemeType.OAUTH2,
-                        flows = @OAuthFlows(
-                                authorizationCode = @OAuthFlow(
-                                        authorizationUrl = OpenApiConstants.OAUTH2_AUTHORIZATION_URL,
-                                        tokenUrl = OpenApiConstants.OAUTH2_TOKEN_URL,
-                                        scopes = {
-                                                @OAuthScope(name = OpenApiConstants.OAUTH2_GLOBAL_SCOPE),
-                                                @OAuthScope(name = OpenApiConstants.OAUTH2_ACCESS_SCOPE)
-                                        }
-                                )
-                        )
-                ),
-                @SecurityScheme(
-                        name = OpenApiConstants.JWT,
-                        description = OpenApiConstants.JWT_DESCRIPTION,
-                        type = SecuritySchemeType.APIKEY,
-                        in = SecuritySchemeIn.HEADER
-                )
-        }
-)
+//@SecuritySchemes(
+//        value = {
+//                @SecurityScheme(
+//                        name = OpenApiConstants.OAUTH2,
+//                        description = OpenApiConstants.OAUTH2_DESCRIPTION,
+//                        type = SecuritySchemeType.OAUTH2,
+//                        flows = @OAuthFlows(
+//                                authorizationCode = @OAuthFlow(
+//                                        authorizationUrl = OpenApiConstants.OAUTH2_AUTHORIZATION_URL,
+//                                        tokenUrl = OpenApiConstants.OAUTH2_TOKEN_URL,
+//                                        scopes = {
+//                                                @OAuthScope(name = OpenApiConstants.OAUTH2_GLOBAL_SCOPE),
+//                                                @OAuthScope(name = OpenApiConstants.OAUTH2_ACCESS_SCOPE)
+//                                        }
+//                                )
+//                        )
+//                ),
+//                @SecurityScheme(
+//                        name = OpenApiConstants.JWT,
+//                        description = OpenApiConstants.JWT_DESCRIPTION,
+//                        type = SecuritySchemeType.APIKEY,
+//                        in = SecuritySchemeIn.HEADER
+//                )
+//        }
+//)
 @Configuration
 public class OpenApiConfiguration {
 
@@ -50,13 +50,7 @@ public class OpenApiConfiguration {
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .paths(new Paths().addPathItem("/", new PathItem()))
-                .info(new Info().title(OpenApiConstants.TITLE))
-                .security(
-                        List.of(
-                                new SecurityRequirement().addList(OpenApiConstants.OAUTH2),
-                                new SecurityRequirement().addList(OpenApiConstants.JWT)
-                        )
-                );
+                .info(new Info().title(OpenApiConstants.TITLE));
     }
 
 }

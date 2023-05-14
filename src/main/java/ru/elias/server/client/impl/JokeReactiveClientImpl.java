@@ -2,6 +2,7 @@ package ru.elias.server.client.impl;
 
 import java.util.List;
 
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -30,6 +31,7 @@ public class JokeReactiveClientImpl implements JokeReactiveClient {
                             .doOnError(error -> log.error(error.getMessage(), error));
     }
 
+    @Timed
     @Override
     public Mono<String> getRandomJokeByCategory(String category) {
         return jokeWebClient.get()
@@ -42,6 +44,7 @@ public class JokeReactiveClientImpl implements JokeReactiveClient {
                             .doOnError(error -> log.error(error.getMessage(), error));
     }
 
+    @Timed
     @Override
     public Mono<List<String>> getAllCategories() {
         return jokeWebClient.get()
