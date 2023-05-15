@@ -85,6 +85,7 @@ public class JokeServiceImpl implements JokeService {
     @Override
     @Transactional
     public ResponseEntity<List<JokesGeneralStatistic>> getJokesCountStatistics() {
+        var statistic = jokeQueryCustomRepository.countByCategories();
         return ResponseEntity.ok(jokeQueryCustomRepository.countByCategories());
     }
 
