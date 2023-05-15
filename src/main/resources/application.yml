@@ -10,18 +10,33 @@ spring:
         format_sql: true
   messages:
     basename: i18n/messages
-#  security:
-#    oauth2:
-#      client:
-#        registration:
-#          google:
-#            clientId: 419340148161-n9f973smr4n986lnj2kphq60qh7ggf6t.apps.googleusercontent.com
-#            clientSecret: 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
-#            redirectUri: http://localhost:8080/login/oauth2/code/google
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 519795840998-37dgekgcdcihkgdrp1jvib0kfa7a682v.apps.googleusercontent.com
+            clientSecret: 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
+            scope: openid, profile, email
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com/o/oauth2/auth
+          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+
+springdoc:
+  packages-to-scan: ru.elias.server
+  swagger-ui:
+    path: /swagger-ui
+    doc-expansion: none
+    oauth:
+      client-id: 519795840998-37dgekgcdcihkgdrp1jvib0kfa7a682v.apps.googleusercontent.com
+      client-secret: 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
+    oauth2-redirect-url: http://localhost:8080/swagger-ui/oauth2-redirect.html
+
 management:
   endpoints:
-   web:
-    exposure.include: metrics, health, prometheus
+    web:
+      exposure.include: metrics, health, prometheus
   metrics:
     export:
       prometheus:
@@ -29,15 +44,6 @@ management:
     distribution:
       percentiles-histogram:
         "[http.server.requests]": true
-springdoc:
-  packages-to-scan: ru.elias.server
-  swagger-ui:
-    path: /swagger-ui
-    doc-expansion: none
-#    oauth:
-#      client-id: 419340148161-n9f973smr4n986lnj2kphq60qh7ggf6t.apps.googleusercontent.com
-#      client-secret: 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
-#    oauth2-redirect-url: http://localhost:8080/swagger-ui/oauth2-redirect.html
 
 webclient:
   url: https://api.chucknorris.io

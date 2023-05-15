@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class TimedGaugeConfiguration {
+public class TimedGaugeConfig {
 
     @Bean
     public TimedAspect timedAspect(MeterRegistry meterRegistry) {

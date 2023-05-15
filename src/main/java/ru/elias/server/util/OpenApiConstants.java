@@ -9,15 +9,17 @@ public class OpenApiConstants {
 
     public static final String OAUTH2 = "OAuth2";
 
-    public static final String OAUTH2_AUTHORIZATION_URL = "http://localhost:8080/oauth2/authorization/google";
+    public static final String OAUTH2_AUTHORIZATION_URL = "https://accounts.google.com/o/oauth2/auth";
 
     public static final String OAUTH2_TOKEN_URL = "https://www.googleapis.com/oauth2/v4/token";
 
     public static final String OAUTH2_DESCRIPTION = "Authorization with Google";
 
-    public static final String OAUTH2_GLOBAL_SCOPE = "global";
+    public static final String OAUTH2_OPENID_SCOPE = "openid";
 
-    public static final String OAUTH2_ACCESS_SCOPE = "accessEverything";
+    public static final String OAUTH2_EMAIL_SCOPE = "email";
+
+    public static final String OAUTH2_PROFILE_SCOPE = "profile";
 
     public static final String JWT = "JWT";
 

@@ -1,6 +1,7 @@
 package ru.elias.server.dto;
 
 import io.micrometer.core.instrument.MultiGauge;
+import io.micrometer.core.instrument.Tags;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,8 +17,10 @@ public class StatisticGauge {
 
     private String category;
 
-    private Long jokeCounter;
+    private Long jokesCounter;
 
-    public MultiGauge.Row
+    public MultiGauge.Row<StatisticGauge> toRow() {
+        return MultiGauge.Row.of(Tags.of("category", category), this, c -> c.jokesCounter);
+    }
 
 }
