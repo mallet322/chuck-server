@@ -8,6 +8,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  liquibase:
+    enabled: true
   messages:
     basename: i18n/messages
   security:
