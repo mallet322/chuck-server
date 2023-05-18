@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.elias.server.dto.CategoryDto;
 import ru.elias.server.service.CategoryService;
@@ -45,8 +45,7 @@ public class CategoryRestController {
     @Operation(summary = "Create category")
     @PostMapping
     public ResponseEntity<Void> create(
-            @Parameter(description = "Creating mode (auto/manual)")
-            @RequestParam(value = "auto") boolean flag,
+            @RequestHeader(value = "auto") Boolean flag,
             @Valid
             @RequestBody(required = false) CategoryDto request) {
         return categoryService.createCategories(flag, request);
