@@ -24,7 +24,8 @@
 + **Swagger OpenAPI**
 + **Maven**
 + **JasperReports**
-+ 
++ **Docker compose**
++ **Grafana/Prometheus**
 
 Описание API
 ----------------
